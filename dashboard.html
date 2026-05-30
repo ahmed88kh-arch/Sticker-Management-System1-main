@@ -13,12 +13,13 @@
         <header class="top-bar" style="justify-content: space-between; padding: 10px 30px; background: var(--card-bg); border-bottom: 1px solid var(--border-color); display: flex; align-items: center;">
             <div class="top-bar-left" style="display: flex; align-items: center; gap: 20px;">
                 <div class="sidebar-header" style="display: flex; align-items: center; gap: 10px; padding: 0;">
-                    <img src="logo.png" alt="Logo" class="app-logo" style="width: 40px; height: 40px; border-radius: 10px;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 100 100\'><rect width=\'100\' height=\'100\' fill=\'%230066ff\' rx=\'20\'/><text x=\'50\' y=\'65\' font-size=\'50\' text-anchor=\'middle\' fill=\'white\'>🎨</text></svg>'">
+                    <img src="logo.png" alt="Logo" class="app-logo" style="width: 65px; height: 65px; border-radius: 12px; object-fit: contain;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'65\' height=\'65\' viewBox=\'0 0 100 100\'><rect width=\'100\' height=\'100\' fill=\'%230066ff\' rx=\'20\'/><text x=\'50\' y=\'65\' font-size=\'50\' text-anchor=\'middle\' fill=\'white\'>🎨</text></svg>'">
                     <span class="logo-text" style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">StickerPro</span>
                 </div>
                 
-                <button class="nav-item home-btn active" data-target="sectionHomeMenu" style="display: flex; align-items: center; gap: 8px; background: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif;">
-                    <span class="icon">🏠</span> ماڵەوە (سەرەکی)
+                <button class="nav-item home-btn active" data-target="sectionHomeMenu" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #1f2937; border: none; padding: 6px 15px; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif;">
+                    <img src="home-icon.png" alt="Home" style="width: 24px; height: 24px; object-fit: contain;">
+                    <span style="font-size: 0.8rem;">سەرەتا</span>
                 </button>
             </div>
 
@@ -57,67 +58,69 @@
 
             <!-- Section: Home Menu (New Dashboard) -->
             <div id="sectionHomeMenu" class="page-section active-section">
-                <div class="welcome-section">
-                    <div class="welcome-header">
-                        <div>
-                            <h2 style="font-size: 2rem; margin-bottom: 10px;">سیستەمی پڕۆفیشناڵی StickerPro 🚀</h2>
-                            <p style="opacity: 0.8; font-size: 1.1rem;">بەخێربێیتەوە ئەدمین، لێرەدا دەتوانیت بە تەواوی ئامارەکان کۆنتڕۆڵ بکەیت.</p>
-                        </div>
-                        <div class="header-actions">
-                            <button class="add-btn" onclick="navigateToSection('sectionAddProduct')" style="background: #fbbf24; color: #000; font-weight: 700;">
-                                <span class="icon">➕</span> زیادکردنی بەرهەم
-                            </button>
-                        </div>
+                <div class="banner-container">
+                    <div class="banner-text-box">
+                        <h2>سیستەمی بەڕێوەبردنی ستیکەر</h2>
+                        <p>بەخێربێیتەوە ئەدمین، کۆنتڕۆڵی تەواوی کارەکانت بکە</p>
                     </div>
                 </div>
 
                 <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;">📦</div>
+                        <div class="stat-icon">
+                            <img src="stat-products-icon.png" alt="Products" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
                         <div class="stat-info">
                             <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 5px;">کۆی گشتی بەرهەمەکان</p>
-                            <h3 id="totalProducts" style="font-size: 1.8rem; font-weight: 700;">0</h3>
+                            <h3 id="totalProducts" style="font-size: 1.6rem; font-weight: 700;">0</h3>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">⚠️</div>
+                        <div class="stat-icon">
+                            <img src="stat-expired-icon.png" alt="Expired" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
                         <div class="stat-info">
                             <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 5px;">ستیکەری کەم (بەسەرچوو)</p>
-                            <h3 id="lowStickerStock" style="font-size: 1.8rem; font-weight: 700;">0</h3>
+                            <h3 id="lowStickerStock" style="font-size: 1.6rem; font-weight: 700;">0</h3>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">💰</div>
+                        <div class="stat-icon">
+                            <img src="stat-value-icon.png" alt="Value" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
                         <div class="stat-info">
                             <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 5px;">کۆی نرخی کۆگا</p>
-                            <h3 id="totalValue" style="font-size: 1.5rem; font-weight: 700;">0</h3>
+                            <h3 id="totalValue" style="font-size: 1.4rem; font-weight: 700;">0</h3>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(56, 189, 248, 0.1); color: #38bdf8;">🛒</div>
+                        <div class="stat-icon">
+                            <img src="stat-sales-icon.png" alt="Sales" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
                         <div class="stat-info">
                             <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 5px;">کۆی فرۆشتنی ئەمڕۆ</p>
-                            <h3 id="totalSalesToday" style="font-size: 1.8rem; font-weight: 700;">0</h3>
+                            <h3 id="totalSalesToday" style="font-size: 1.6rem; font-weight: 700;">0</h3>
                         </div>
                     </div>
                 </div>
 
                 <!-- Top Widgets Row (Storage Distribution Only) -->
-                <div style="margin-bottom: 20px;">
-                    <!-- Storage Distribution Widget (Full Width) -->
-                    <div class="recent-stickers-card" style="padding: 24px; background: #ffffff; border: 1px solid rgba(56, 189, 248, 0.15); display: flex; flex-direction: column; justify-content: center;">
-                        <div class="card-header" style="margin-bottom: 12px;">
-                            <h3 style="font-size: 1.1rem; color: #38bdf8;">📊 دۆخی مەوجودات</h3>
+                <div style="margin-bottom: 30px; display: flex; justify-content: center;">
+                    <!-- Storage Distribution Widget (Extra Thin) -->
+                    <div class="recent-stickers-card" style="padding: 10px 30px; background: #ffffff; border: 1px solid rgba(56, 189, 248, 0.15); display: flex; flex-direction: column; justify-content: center; width: 100%; border-radius: 16px;">
+                        <div class="card-header" style="margin-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <h3 style="font-size: 1rem; color: #38bdf8; margin: 0; font-weight: 700;">دۆخی مەوجودات</h3>
+                            <img src="status-logo.png" alt="Status Logo" style="width: 28px; height: 28px; object-fit: contain;">
                         </div>
-                        <div style="margin-top: 5px;">
-                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; color: #6b7280;">
+                        <div style="margin-top: 0;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; color: #6b7280; font-weight: 600;">
                                 <span>ڕێژەی ستیکەری ماوە</span>
                                 <span id="stickerUsagePercent" style="font-weight: 700; color: #38bdf8;">0%</span>
                             </div>
-                            <div style="width: 100%; height: 10px; background: rgba(0,0,0,0.05); border-radius: 6px; overflow: hidden;">
-                                <div id="stickerUsageProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #6366f1); border-radius: 6px; transition: width 0.5s ease;"></div>
+                            <div style="width: 100%; height: 8px; background: rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden;">
+                                <div id="stickerUsageProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #6366f1); border-radius: 8px; transition: width 0.5s ease;"></div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-top: 12px; color: #6b7280;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-top: 4px; color: #6b7280; font-weight: 600;">
                                 <span id="stickersSoldTodaySpan">فرۆشراوی ئەمڕۆ: 0</span>
                                 <span id="stickersTotalStockSpan">ماوە لە کۆگا: 0</span>
                             </div>

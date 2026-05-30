@@ -1,4 +1,4 @@
-const { app, BrowserWindow, session } = require('electron');
+const { app, BrowserWindow, session, Menu } = require('electron');
 const path = require('path');
 
 function createWindow() {
@@ -20,6 +20,9 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  // لابردنی مێنوی سەرەوە (File, Edit, View, etc.)
+  Menu.setApplicationMenu(null);
+
   session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
     if (permission === 'media') {
       return callback(true);
