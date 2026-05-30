@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StickerPro - داشبۆرد</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<body class="light-mode">
+    <div class="app-container">
+        <!-- Top Navbar -->
+        <header class="top-bar" style="justify-content: space-between; padding: 10px 30px; background: var(--card-bg); border-bottom: 1px solid var(--border-color); display: flex; align-items: center;">
+            <div class="top-bar-left" style="display: flex; align-items: center; gap: 20px;">
+                <div class="sidebar-header" style="display: flex; align-items: center; gap: 10px; padding: 0;">
+                    <img src="logo.png" alt="Logo" class="app-logo" style="width: 40px; height: 40px; border-radius: 10px;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 100 100\'><rect width=\'100\' height=\'100\' fill=\'%230066ff\' rx=\'20\'/><text x=\'50\' y=\'65\' font-size=\'50\' text-anchor=\'middle\' fill=\'white\'>🎨</text></svg>'">
+                    <span class="logo-text" style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">StickerPro</span>
+                </div>
+                
+                <button class="nav-item home-btn active" data-target="sectionHomeMenu" style="display: flex; align-items: center; gap: 8px; background: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif;">
+                    <span class="icon">🏠</span> ماڵەوە (سەرەکی)
+                </button>
+            </div>
+
+            <div class="top-bar-right" style="display: flex; align-items: center; gap: 15px;">
+                    <!-- Notification Bell -->
+                    <div class="notification-container" style="position: relative;">
+                        <button id="notificationBellBtn" style="background: transparent; border: none; font-size: 1.35rem; color: #6b7280; cursor: pointer; position: relative; padding: 5px; transition: all 0.2s;">
+                            🔔
+                            <span id="notificationBadge" style="position: absolute; top: -2px; right: -2px; background: #ef4444; color: #1f2937; font-size: 0.68rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid #f9fafb; display: none;">0</span>
+                        </button>
+                        <!-- Notification Dropdown Panel -->
+                        <div id="notificationDropdown" style="display: none; position: absolute; top: 45px; left: -120px; width: 340px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); z-index: 1000; padding: 15px 0; color: var(--text-main);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 16px 12px 16px; border-bottom: 1px solid var(--border-color);">
+                                <h4 style="margin: 0; color: var(--text-main); font-size: 0.95rem; font-weight: 600;">🔔 ئاگادارکردنەوەکان</h4>
+                                <span id="closeNotificationsBtn" style="font-size: 0.75rem; color: #38bdf8; cursor: pointer; font-weight: 600;">✕ داخستن</span>
+                            </div>
+                            <div id="notificationList" style="max-height: 320px; overflow-y: auto; padding: 5px 0;">
+                                <div style="text-align: center; color: #6b7280; padding: 25px 0; font-size: 0.85rem;">هیچ ئاگادارکردنەوەیەک نییە! کۆگا تەندروستە. 🎉</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="user-profile" style="display: flex; align-items: center; gap: 10px;">
+                        <button id="themeToggleBtn" style="background: transparent; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); cursor: pointer; padding: 5px 10px; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: all 0.2s;">
+                            <span id="themeToggleIcon">🌙</span>
+                        </button>
+                        <button onclick="logout()" style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; color: #ef4444; cursor: pointer; padding: 5px 10px; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: all 0.2s;">
+                            <span class="icon">🚪</span> دەرچوون
+                        </button>
+                        <span class="status-indicator"></span>
+                        <span class="user-name">ئەدمین</span>
+                        <div class="user-avatar">AD</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Section: Home Menu (New Dashboard) -->
+            <div id="sectionHomeMenu" class="page-section active-section">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2 style="font-size: 2rem; margin-bottom: 10px;">سیستەمی پڕۆفیشناڵی StickerPro 🚀</h2>
+                            <p style="opacity: 0.8; font-size: 1.1rem;">بەخێربێیتەوە ئەدمین، لێرەدا دەتوانیت بە تەواوی ئامارەکان کۆنتڕۆڵ بکەیت.</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="add-btn" onclick="navigateToSection('sectionAddProduct')" style="background: #fbbf24; color: #000; font-weight: 700;">
+                                <span class="icon">➕</span> زیادکردنی بەرهەم
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;">📦</div>
+                        <div class="stat-info">
+                            <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 5px;">کۆی گشتی بەرهەمەکان</p>
+                            <h3 id="totalProducts" style="font-size: 1.8rem; font-weight: 700;">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">⚠️</div>
+                        <div class="stat-info">
+                            <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 5px;">ستیکەری کەم (بەسەرچوو)</p>
+                            <h3 id="lowStickerStock" style="font-size: 1.8rem; font-weight: 700;">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">💰</div>
+                        <div class="stat-info">
+                            <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 5px;">کۆی نرخی کۆگا</p>
+                            <h3 id="totalValue" style="font-size: 1.5rem; font-weight: 700;">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(56, 189, 248, 0.1); color: #38bdf8;">🛒</div>
+                        <div class="stat-info">
+                            <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 5px;">کۆی فرۆشتنی ئەمڕۆ</p>
+                            <h3 id="totalSalesToday" style="font-size: 1.8rem; font-weight: 700;">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Widgets Row (Storage Distribution Only) -->
+                <div style="margin-bottom: 20px;">
+                    <!-- Storage Distribution Widget (Full Width) -->
+                    <div class="recent-stickers-card" style="padding: 24px; background: #ffffff; border: 1px solid rgba(56, 189, 248, 0.15); display: flex; flex-direction: column; justify-content: center;">
+                        <div class="card-header" style="margin-bottom: 12px;">
+                            <h3 style="font-size: 1.1rem; color: #38bdf8;">📊 دۆخی مەوجودات</h3>
+                        </div>
+                        <div style="margin-top: 5px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; color: #6b7280;">
+                                <span>ڕێژەی ستیکەری ماوە</span>
+                                <span id="stickerUsagePercent" style="font-weight: 700; color: #38bdf8;">0%</span>
+                            </div>
+                            <div style="width: 100%; height: 10px; background: rgba(0,0,0,0.05); border-radius: 6px; overflow: hidden;">
+                                <div id="stickerUsageProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #6366f1); border-radius: 6px; transition: width 0.5s ease;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-top: 12px; color: #6b7280;">
+                                <span id="stickersSoldTodaySpan">فرۆشراوی ئەمڕۆ: 0</span>
+                                <span id="stickersTotalStockSpan">ماوە لە کۆگا: 0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Menu Grid -->
+                <div class="home-menu-grid">
+                    <div class="nav-item home-menu-btn" data-target="sectionDashboard">
+                        <span class="home-menu-icon">🗄️</span>
+                        <h3>مەوجودات (کۆگا)</h3>
+                        <p>لیستی بەرهەمەکان</p>
+                    </div>
+
+                    <div class="nav-item home-menu-btn" data-target="sectionAddProduct">
+                        <span class="home-menu-icon">➕</span>
+                        <h3>داخلکردنی بەرهەم</h3>
+                        <p>زیادکردنی نوێ</p>
+                    </div>
+                    <div class="nav-item home-menu-btn" data-target="sectionSales">
+                        <span class="home-menu-icon">💳</span>
+                        <h3>لیستی فرۆشراوەکان</h3>
+                        <p>فرۆشتنەکانی پێشوو</p>
+                    </div>
+                    <div class="nav-item home-menu-btn" data-target="sectionBarcodeSearch">
+                        <span class="home-menu-icon">🔍</span>
+                        <h3>گەڕانی بارکۆد</h3>
+                        <p>دۆزینەوە بە خێرایی</p>
+                    </div>
+                    <div class="nav-item home-menu-btn" data-target="sectionWorkers">
+                        <span class="home-menu-icon">👷</span>
+                        <h3>کڕێکارەکان</h3>
+                        <p>ناوی کارمەندان</p>
+                    </div>
+                    <div class="nav-item home-menu-btn" data-target="sectionPayroll">
+                        <span class="home-menu-icon">💰</span>
+                        <h3>مووچە و دەوام</h3>
+                        <p>ئامادەنەبوون</p>
+                    </div>
+                    <div class="nav-item home-menu-btn" data-target="sectionAdvancedStats">
+                        <span class="home-menu-icon">📈</span>
+                        <h3>ئاماری گرافی</h3>
+                        <p>بینینی گرافیکەکان</p>
+                    </div>
+                    <div class="nav-item home-menu-btn" data-target="sectionReports">
+                        <span class="home-menu-icon">📑</span>
+                        <h3>ڕاپۆرتی گشتی</h3>
+                        <p>ڕاپۆرتەکان</p>
+                    </div>
+                    <div class="nav-item home-menu-btn" data-target="sectionTalaf">
+                        <span class="home-menu-icon">🚮</span>
+                        <h3>تەلەف و بەسەرچوو</h3>
+                        <p>کاڵای تێکچوو</p>
+                    </div>
+                    <div class="nav-item home-menu-btn" data-target="sectionBackup">
+                        <span class="home-menu-icon">💾</span>
+                        <h3>باکئەپ</h3>
+                        <p>پاراستنی داتا</p>
+                    </div>
+                    <div class="nav-item home-menu-btn" data-target="sectionActivityLog">
+                        <span class="home-menu-icon">🕵️‍♂️</span>
+                        <h3>تۆماری چاودێری</h3>
+                        <p>لۆگی سیستەم</p>
+                    </div>
+                    <div class="nav-item home-menu-btn" data-target="sectionLabelPrint">
+                        <span class="home-menu-icon">🖨️</span>
+                        <h3>چاپکردنی لایبڵ</h3>
+                        <p>دروستکردنی ستیکەر</p>
+                    </div>
+                    <div class="nav-item home-menu-btn" data-target="sectionSettings">
+                        <span class="home-menu-icon">🛠️</span>
+                        <h3>ڕێکخستنەکان</h3>
+                        <p>ڕێکخستنی سیستەم</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Dashboard (Stickers List) -->
+            <div id="sectionDashboard" class="page-section">
+
+
+                <!-- Advanced Search & Filter Panel -->
+                <div class="recent-stickers-card" style="margin-top: 20px; padding: 20px 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                        <h3 style="margin: 0; display: flex; align-items: center; gap: 8px;">🔍 گەڕانی پیشکەوتوو</h3>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <span id="filterResultCount" style="background: rgba(99,102,241,0.12); color: #6366f1; padding: 4px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; border: 1px solid rgba(99,102,241,0.2); display: flex; align-items: center; gap: 4px;">📦 <span id="filterResultNum">0</span> بەرهەم</span>
+                            <button onclick="clearAllFilters()" id="clearFiltersBtn" style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; padding: 4px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: none;">✕ پاکردنەوەی فلتەر</button>
+                            <button class="view-all export-excel-btn" id="exportProductsBtn">📊 Excel</button>
+                        </div>
+                    </div>
+
+                    <!-- Search Row -->
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                        <div style="position: relative;">
+                            <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 1rem; pointer-events: none;">🔍</span>
+                            <input type="text" id="filterName" placeholder="بگەڕێ بەپێی ناوی بەرهەم..." oninput="applyFilters()" style="width: 100%; padding: 10px 40px 10px 12px; border-radius: 10px; border: 1.5px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main); font-size: 0.9rem; box-sizing: border-box; transition: border-color 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border-color)'">
+                        </div>
+                        <div style="position: relative;">
+                            <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 0.9rem; pointer-events: none;">🏷️</span>
+                            <input type="text" id="filterBatch" placeholder="ژمارەی باچ..." oninput="applyFilters()" style="width: 100%; padding: 10px 36px 10px 12px; border-radius: 10px; border: 1.5px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main); font-size: 0.9rem; box-sizing: border-box; transition: border-color 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border-color)'">
+                        </div>
+                        <div style="position: relative;">
+                            <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 0.9rem; pointer-events: none;">🔢</span>
+                            <input type="text" id="filterCode" placeholder="کۆدی بەرهەم..." oninput="applyFilters()" style="width: 100%; padding: 10px 36px 10px 12px; border-radius: 10px; border: 1.5px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main); font-size: 0.9rem; box-sizing: border-box; transition: border-color 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border-color)'">
+                        </div>
+                    </div>
+
+                    <!-- Filter Row 2 -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                        <div style="position: relative;">
+                            <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; pointer-events: none;">📍</span>
+                            <input type="text" id="filterLocation" placeholder="شوێن..." oninput="applyFilters()" style="width: 100%; padding: 9px 34px 9px 12px; border-radius: 10px; border: 1.5px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main); font-size: 0.85rem; box-sizing: border-box; transition: border-color 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border-color)'">
+                        </div>
+                        <div style="position: relative;">
+                            <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; pointer-events: none;">🏭</span>
+                            <input type="text" id="filterCompany" placeholder="کۆمپانیا..." oninput="applyFilters()" style="width: 100%; padding: 9px 34px 9px 12px; border-radius: 10px; border: 1.5px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main); font-size: 0.85rem; box-sizing: border-box; transition: border-color 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border-color)'">
+                        </div>
+                        <div>
+                            <select id="filterExpStatus" onchange="applyFilters()" style="width: 100%; padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main); font-size: 0.85rem; cursor: pointer; transition: border-color 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border-color)'">
+                                <option value="">📅 هەموو بەرواری بەسەرچوون</option>
+                                <option value="expired">🔴 بەسەرچووە</option>
+                                <option value="soon">🟡 نزیکی بەسەرچوون (6 مانگ)</option>
+                                <option value="ok">🟢 باشە</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select id="filterSortBy" onchange="applyFilters()" style="width: 100%; padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main); font-size: 0.85rem; cursor: pointer; transition: border-color 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border-color)'">
+                                <option value="">🔃 ڕیزکردن بەپێی...</option>
+                                <option value="name">ناو (A-Z)</option>
+                                <option value="qty_desc">بڕ (زیاترین)</option>
+                                <option value="qty_asc">بڕ (کەمترین)</option>
+                                <option value="exp_asc">بەسەرچوون (نزیکترین)</option>
+                                <option value="exp_desc">بەسەرچوون (دووریترین)</option>
+                                <option value="price_desc">نرخ (بەرزترین)</option>
+                                <option value="received_desc">نوێترین داخل کراو</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Quick Filter Tags -->
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+                        <span style="font-size: 0.8rem; color: #6b7280; display: flex; align-items: center;">فلتەری خێرا:</span>
+                        <button onclick="quickFilter('expired')" class="quick-filter-tag" style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #ef4444; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">🔴 بەسەرچووەکان</button>
+                        <button onclick="quickFilter('soon')" class="quick-filter-tag" style="background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.25); color: #d97706; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">🟡 نزیکی بەسەرچوون</button>
+                        <button onclick="quickFilter('low_stock')" class="quick-filter-tag" style="background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.25); color: #6366f1; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">📉 ستیکەری کەم (&lt;100)</button>
+                        <button onclick="quickFilter('hawkary')" class="quick-filter-tag" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #10b981; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">🏭 HAWKARY</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ژمارەی باچ</th>
+                                    <th>کۆد</th>
+                                    <th>ناوی بەرهەم</th>
+                                    <th>بڕ (QTY)</th>
+                                    <th>شوێن</th>
+                                    <th>بڕی ستیکەر</th>
+                                    <th>نرخ</th>
+                                    <th>ژ. مۆڵەت</th>
+                                    <th>کۆمپانیا</th>
+                                    <th>وەرگیراوە</th>
+                                    <th>بەسەرچوون</th>
+                                    <th>کردارەکان</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stickerTableBody"></tbody>
+                        </table>
+                        <!-- No results row -->
+                        <div id="noFilterResults" style="display:none; text-align:center; padding: 40px 20px; color: #6b7280;">
+                            <div style="font-size: 2.5rem; margin-bottom: 12px;">🔍</div>
+                            <p style="font-weight: 600; font-size: 1rem;">هیچ بەرهەمێک نەدۆزرایەوە</p>
+                            <p style="font-size: 0.85rem; margin-top: 4px;">فلتەرەکانت بگۆڕە یان پاک بکەرەوە</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END: Section: Dashboard -->
+
+            <!-- Section: Add Product (Standalone) -->
+            <div id="sectionAddProduct" class="page-section" style="display: none;">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>داخلکردنی بەرهەمی نوێ ➕</h2>
+                            <p>لێرەدا دەتوانیت بەرهەمێکی نوێ زیاد بکەیت بە داخلکردنی دەستی یان کۆپیکردن لە Excel.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                    <div class="recent-stickers-card" style="padding: 30px;">
+                        <div class="modal-tabs" style="display: flex; gap: 10px; border-bottom: 2px solid var(--border-color); margin-bottom: 25px;">
+                            <button type="button" class="tab-btn active" id="apTabManual" onclick="switchAddProductTab('manual')" style="flex: 1; padding: 12px; border: none; border-bottom: 3px solid #6366f1; background: none; font-weight: 700; cursor: pointer; color: var(--text-main); font-size: 1rem;">✏️ داخلکردنی دەستی</button>
+                            <button type="button" class="tab-btn" id="apTabPaste" onclick="switchAddProductTab('paste')" style="flex: 1; padding: 12px; border: none; border-bottom: 3px solid transparent; background: none; font-weight: 700; cursor: pointer; color: var(--text-muted); font-size: 1rem;">📋 کۆپی لە Excel</button>
+                        </div>
+
+                        <!-- Manual Entry Tab -->
+                        <div id="apContentManual">
+                            <!-- Camera / Image OCR Bar -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(99, 102, 241, 0.06); padding: 14px 18px; border-radius: 12px; border: 1px dashed rgba(99, 102, 241, 0.25); direction: rtl; gap: 10px;">
+                                <span style="font-size: 0.9rem; color: #4b5563; font-weight: 600;">✨ دەتەوێت زانیارییەکان لە ڕێگەی کامێرا یان وێنەی لایبڵەوە بخوێنیتەوە؟</span>
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="button" id="apStartCameraBtn" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600;">🎥 سکان بە کامێرا</button>
+                                    <button type="button" onclick="document.getElementById('apLabelImageInput').click()" style="background: #6366f1; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600;">📷 بارکردنی وێنە</button>
+                                </div>
+                                <input type="file" id="apLabelImageInput" accept="image/*" style="display: none;">
+                            </div>
+
+                            <!-- Camera Stream -->
+                            <div id="apCameraScannerContainer" style="display: none; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 20px; background: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); position: relative; direction: rtl;">
+                                <video id="apWebcamVideo" autoplay playsinline style="width: 100%; max-width: 500px; border-radius: 8px; border: 2px solid #6366f1; transform: scaleX(-1); background: #000;"></video>
+                                <div style="display: flex; gap: 10px; width: 100%; justify-content: center;">
+                                    <button type="button" id="apCaptureBtn" style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer;">📸 وێنەگرتن و سکان</button>
+                                    <button type="button" id="apCloseCameraBtn" style="background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer;">✕ داخستن</button>
+                                </div>
+                                <canvas id="apWebcamCanvas" style="display: none;"></canvas>
+                            </div>
+
+                            <form id="addProductForm">
+                                <div class="form-grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px;">
+                                    <div class="input-group"><label>ژمارەی باچ (BATCH)</label><input type="text" id="apBatchNo" required></div>
+                                    <div class="input-group"><label>کۆدی بەرهەم</label><input type="text" id="apProductCode" required></div>
+                                    <div class="input-group"><label>ناوی بەرهەم</label><input type="text" id="apProductName" list="apExistingProductsList" required><datalist id="apExistingProductsList"></datalist></div>
+                                </div>
+                                <div class="form-grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px;">
+                                    <div class="input-group"><label>بڕ (QTY)</label><input type="number" id="apQty" required></div>
+                                    <div class="input-group"><label>شوێن (Location)</label><input type="text" id="apLocation" required></div>
+                                    <div class="input-group"><label>بڕی ستیکەر</label><input type="number" id="apStickerQty" required></div>
+                                </div>
+                                <div class="form-grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px;">
+                                    <div class="input-group"><label>نرخ</label><input type="number" id="apPrice" required></div>
+                                    <div class="input-group"><label>ژمارەی مۆڵەت (P.No)</label><input type="text" id="apPNumber" required></div>
+                                    <div class="input-group"><label>کۆمپانیا</label><input type="text" id="apCompany" required></div>
+                                </div>
+                                <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                                    <div class="input-group"><label>بەرواری وەرگرتن</label><input type="date" id="apReceivedDate" required></div>
+                                    <div class="input-group"><label>بەرواری بەسەرچوون</label><input type="date" id="apExpDate" required></div>
+                                </div>
+                                <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                                    <button type="button" class="cancel-btn" onclick="clearAddProductForm()" style="padding: 12px 30px; border-radius: 10px; font-size: 1rem;">🗑️ پاکردنەوە</button>
+                                    <button type="submit" class="save-btn" style="padding: 12px 40px; border-radius: 10px; font-size: 1rem; font-weight: 700;">✅ پاشکەوتکردن</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Excel Paste Tab -->
+                        <div id="apContentPaste" style="display: none;">
+                            <div class="paste-instructions">
+                                <div class="paste-info-box" style="margin-bottom: 15px; padding: 15px; background: rgba(99,102,241,0.06); border: 1px dashed rgba(99,102,241,0.3); border-radius: 10px;"><p>📋 کۆڵۆمەکان بەپێی ئەم ڕیزبەندییە کۆپی بکە لە Excel:<br><b>باچ ➔ کۆدی بەرهەم ➔ ناوی بەرهەم ➔ بڕ ➔ شوێن ➔ بڕی ستیکەر ➔ نرخ ➔ ژمارەی مۆڵەت ➔ کۆمپانیا ➔ بەرواری وەرگرتن ➔ بەرواری بەسەرچوون</b></p></div>
+                                <textarea id="apPasteArea" placeholder="لێرە کۆپی پێست بکە..." style="width: 100%; height: 200px; padding: 14px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main); font-family: monospace; font-size: 0.9rem; resize: vertical; margin-bottom: 15px;"></textarea>
+                                <div id="apPastePreview" style="margin-bottom: 15px;"></div>
+                                <div style="display: flex; justify-content: flex-end;">
+                                    <button type="button" id="apImportPasteBtn" class="save-btn" style="padding: 12px 30px; border-radius: 10px; font-size: 1rem;">📋 هاوردەکردن بۆ بنکەدراوە</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END: Section: Add Product -->
+
+            <!-- Section: Workers -->
+            <div id="sectionWorkers" class="page-section" style="display: none;">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>بەڕێوەبردنی کڕێکارەکان 👷</h2>
+                            <p>لێرەدا دەتوانیت زانیاری کڕێکارەکان و فەرمانبەران داخڵ بکەیت.</p>
+                        </div>
+                        <button class="add-btn" id="openWorkerModalBtn">
+                            <span class="icon">➕</span> زیادکردنی کڕێکاری نوێ
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">👥</div>
+                        <div class="stat-info"><h3 id="totalWorkers">0</h3><p>کۆی کڕێکارەکان</p></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="recent-stickers-card">
+                        <div class="card-header"><h3>لیستی کڕێکارەکان</h3><button class="view-all export-excel-btn" id="exportWorkersBtn">📊 هەناردەکردن (Excel)</button></div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ناو</th><th>ژمارەی مۆبایل</th><th>پیشە</th><th>مووچە</th>
+                                        <th>بەرواری دەستپێکردن</th><th>ناونیشان</th><th>کردارەکان</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="workerTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Sales -->
+            <div id="sectionSales" class="page-section" style="display: none;">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>بەشی فرۆشتن و بەکارهێنان 🛒</h2>
+                            <p>لێرەدا دەتوانیت بڕی ستیکەر و بەرهەمەکان کەم بکەیتەوە لە کاتی فرۆشتن یان بەکارهێنان.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="recent-stickers-card">
+                        <div class="card-header">
+                            <h3>تۆمارکردنی فرۆشتنی نوێ</h3>
+                        </div>
+                        <div style="padding: 20px;">
+                            <div id="stockIndicator" class="stock-info-box" style="margin-bottom: 15px; display: none;">
+                                <span class="icon">📦</span> بڕی بەردەست لە کۆگا: <strong id="currentStockVal">0</strong> QTY | <strong id="currentStickerStockVal">0</strong> ستیکەر | <span style="margin-right: 10px; padding: 2px 8px; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 6px; color: #fbbf24; font-weight: bold;">📍 شوێن (Location): <span id="currentLocationVal">-</span></span>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 20px;">
+                                <label style="font-size: 1.1rem; color: var(--text-main); font-weight: bold;">📍 شوێنی مەبەست (Destination) بۆ تەواوی قائیمەکە</label>
+                                <input type="text" id="salesDestination" placeholder="بۆ نموونە: تەیراوە" required style="font-size: 1.1rem; padding: 15px; border-color: var(--primary); background: var(--modal-input-bg); color: var(--text-main); width: 100%; border-radius: 12px; border: 1px solid var(--primary);">
+                            </div>
+                            
+                            <form id="addToCartForm" style="background: var(--modal-input-bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                                <h4 style="margin-bottom: 15px; color: #3b82f6;">➕ زیادکردنی مادە بۆ قائیمە</h4>
+                                <div class="form-grid-2">
+                                    <div class="input-group">
+                                        <label>هەڵبژاردنی بەرهەم</label>
+                                        <select id="salesProductSelect" required>
+                                            <option value="">هەڵبژێرە...</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>کۆی بڕی کەمکراوە (QTY)</label>
+                                        <input type="number" id="salesQty" placeholder="0" required>
+                                    </div>
+                                </div>
+
+                                <div class="worker-assignment-section" style="margin-top: 20px; padding: 15px; background: var(--bg-dark); border-radius: 12px; border: 1px dashed var(--border-color);">
+                                    <h4 style="margin-bottom: 15px; color: #38bdf8;">👷 کڕێکارە بەشداربووەکان بۆ ئەم مادەیە</h4>
+                                    <div id="workerAssignmentList">
+                                        <!-- Dynamic worker rows will be added here -->
+                                    </div>
+                                    <button type="button" class="add-btn" id="addWorkerToSaleBtn" style="font-size: 0.8rem; padding: 8px 15px; margin-top: 10px;">
+                                        ➕ زیادکردنی کڕێکار
+                                    </button>
+                                </div>
+
+                                <div class="input-group" style="margin-top: 20px;">
+                                    <button type="submit" class="save-btn" style="width: 100%; background: #3b82f6; border: none;">👇 خستنە ناو قائیمە</button>
+                                </div>
+                            </form>
+
+                            <div id="invoiceCartSection" style="display: none; background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.1);">
+                                <h4 style="margin-bottom: 15px; color: #10b981; font-size: 1.2rem;">🛒 مادەکانی ناو قائیمە (<span id="invoiceCartCount">0</span>)</h4>
+                                <div class="table-container" style="margin-bottom: 20px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr style="background: var(--modal-input-bg);">
+                                                <th>بەرهەم</th>
+                                                <th>بڕی QTY</th>
+                                                <th>ستیکەر</th>
+                                                <th>کڕێکارەکان</th>
+                                                <th style="text-align: center;">سڕینەوە</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="invoiceCartTableBody"></tbody>
+                                    </table>
+                                </div>
+                                <button type="button" class="save-btn" id="submitInvoiceBtn" style="width: 100%; background: #10b981; font-size: 1.1rem; padding: 15px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);">✅ تۆمارکردنی سەرجەم قائیمەکە بەیەکجار</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid" style="margin-top: 20px;">
+                    <div class="recent-stickers-card">
+                        <div class="card-header">
+                            <h3>مێژووی فرۆشتنەکان</h3>
+                            <button class="view-all export-excel-btn" id="exportSalesBtn">📊 هەناردەکردن (Excel)</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>بەرهەم</th>
+                                        <th>شوێن</th>
+                                        <th>بڕی QTY</th>
+                                        <th>ستیکەری گشتی</th>
+                                        <th>کڕێکارەکان و بڕی لێدراو</th>
+                                        <th>بەروار</th>
+                                        <th style="text-align:center;">کردارەکان</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== Section: Tikjoo (Waste/Damage) ==================== -->
+            <div id="sectionTalaf" class="page-section" style="display: none;">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>بەشی تکجوو و وێرانبوون 🚮</h2>
+                            <p>لێرەدا دەتوانیت ستیکەرە تکجووکراوەکان تۆمار بکەیت — بڕەکانی خۆکار لە مخزن کەم دەبێتەوە.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Row -->
+                <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 20px;">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:rgba(239,68,68,0.1); color:#ef4444;">🚮</div>
+                        <div class="stat-info">
+                            <p style="color:#6b7280; font-size:.8rem; margin-bottom:5px;">کۆی تکجووی هەموو کات</p>
+                            <h3 id="talafTotalAll" style="font-size:1.8rem; font-weight:700; color:#ef4444;">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:rgba(251,191,36,0.1); color:#fbbf24;">📅</div>
+                        <div class="stat-info">
+                            <p style="color:#6b7280; font-size:.8rem; margin-bottom:5px;">تکجووی ئەمڕۆ</p>
+                            <h3 id="talafTotalToday" style="font-size:1.8rem; font-weight:700; color:#fbbf24;">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:rgba(168,85,247,0.1); color:#a855f7;">📝</div>
+                        <div class="stat-info">
+                            <p style="color:#6b7280; font-size:.8rem; margin-bottom:5px;">ژمارەی تۆمارەکان</p>
+                            <h3 id="talafRecordCount" style="font-size:1.8rem; font-weight:700; color:#a855f7;">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="recent-stickers-card">
+                        <div class="card-header">
+                            <h3>🚮 تۆمارکردنی تکجووی نوێ</h3>
+                        </div>
+                        <div style="padding:20px;">
+                            <div id="talafStockIndicator" class="stock-info-box" style="margin-bottom:15px; display:none;">
+                                <span class="icon">📦</span>
+                                بڕی بەردەست: <strong id="talafCurrentStock">0</strong> QTY |
+                                <strong id="talafCurrentSticker">0</strong> ستیکەر
+                            </div>
+
+                            <form id="talafForm">
+                                <div class="input-group" style="margin-bottom:15px;">
+                                    <label>📦 هەڵبژاردنی بەرهەم</label>
+                                    <select id="talafProductSelect" required>
+                                        <option value="">هەڵبژێرە...</option>
+                                    </select>
+                                </div>
+
+                                <!-- Field 1: Sticker Qty Loss -->
+                                <div style="margin-bottom:15px; background:rgba(239,68,68,0.06); border:2px solid rgba(239,68,68,0.3); border-radius:14px; padding:15px;">
+                                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                                        <span style="background:#ef4444; color:#fff; border-radius:8px; padding:3px 10px; font-size:0.78rem; font-weight:700;">🏷️ ستیکەر</span>
+                                        <label style="font-weight:700; color:#ef4444; font-size:0.95rem; margin:0;">بڕی ستیکەری تکجوو</label>
+                                    </div>
+                                    <div style="font-size:0.75rem; color:#9ca3af; margin-bottom:8px;">چەند ستیکەر تکجوو بووە؟ بنووسە (ئەگەر هیچ ستیکەرێک تکجوو نەبووە، 0 بهێڵە)</div>
+                                    <input type="number" id="talafStickerQty" placeholder="0" min="0" value="0"
+                                        style="width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid rgba(239,68,68,0.4); background:var(--modal-input-bg); color:var(--text-main); font-size:1.1rem; font-weight:700; text-align:center;">
+                                    <div id="talafStickerHint" style="font-size:0.75rem; color:#6b7280; margin-top:5px; display:none;">
+                                        بەردەست لە کۆگا: <strong id="talafStickerAvail" style="color:#ef4444;">0</strong> ستیکەر
+                                    </div>
+                                </div>
+
+                                <!-- Field 2: Product QTY Loss -->
+                                <div style="margin-bottom:15px; background:rgba(59,130,246,0.06); border:2px solid rgba(59,130,246,0.3); border-radius:14px; padding:15px;">
+                                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                                        <span style="background:#3b82f6; color:#fff; border-radius:8px; padding:3px 10px; font-size:0.78rem; font-weight:700;">📦 QTY</span>
+                                        <label style="font-weight:700; color:#3b82f6; font-size:0.95rem; margin:0;">بڕی بەرهەمی (QTY) تکجوو</label>
+                                    </div>
+                                    <div style="font-size:0.75rem; color:#9ca3af; margin-bottom:8px;">چەند دانە بەرهەمی فیزیکی تکجوو بووە؟ (زۆربەی کات 0 دەمێنێت، ستیکەر تکجوو دەبێت نەک بەرهەمەکە خۆی)</div>
+                                    <input type="number" id="talafQty" placeholder="0" min="0" value="0"
+                                        style="width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid rgba(59,130,246,0.4); background:var(--modal-input-bg); color:var(--text-main); font-size:1.1rem; font-weight:700; text-align:center;">
+                                    <div id="talafQtyHint" style="font-size:0.75rem; color:#6b7280; margin-top:5px; display:none;">
+                                        بەردەست لە کۆگا: <strong id="talafQtyAvail" style="color:#3b82f6;">0</strong> QTY
+                                    </div>
+                                </div>
+
+                                <div class="input-group" style="margin-bottom:15px;">
+                                    <label>📝 هۆکاری تکجوو (ئارەزوومەندانە)</label>
+                                    <input type="text" id="talafReason" placeholder="بۆ نموونە: وێرانبوون، دەمارگیری، هەڵەی چاپ..." style="width:100%;">
+                                </div>
+
+                                <div style="background:rgba(239,68,68,0.08); border:1px dashed rgba(239,68,68,0.35); border-radius:10px; padding:12px; margin-bottom:18px; font-size:0.82rem; color:#ef4444; line-height:1.6;">
+                                    ⚠️ ئەگەر بڕی تکجوو تۆماربکەیت، ئەو بڕە خۆکار لە مخزنی بەرهەمەکە کەم دەبێتەوە.
+                                </div>
+
+                                <button type="submit" class="save-btn" style="width:100%; background:linear-gradient(135deg,#ef4444,#dc2626); border:none; font-size:1rem; padding:14px; font-weight:bold; cursor:pointer; box-shadow: 0 10px 15px -3px rgba(239,68,68,0.25);">
+                                    🚮 تۆمارکردنی تکجوو
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Waste History Table -->
+                <div class="dashboard-grid" style="margin-top:20px;">
+                    <div class="recent-stickers-card">
+                        <div class="card-header">
+                            <h3>مێژووی تکجووەکان</h3>
+                            <button class="view-all export-excel-btn" id="exportTalafBtn">📊 هەناردەکردن (Excel)</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>بەرهەم</th>
+                                        <th>بڕی ستیکەر</th>
+                                        <th>بڕی QTY</th>
+                                        <th>هۆکار</th>
+                                        <th>بەروار</th>
+                                        <th style="text-align:center;">کردارەکان</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="talafTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Reports -->
+
+            <div id="sectionReports" class="page-section" style="display: none;">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>ڕاپۆرتەکان و ئاماری کار 📊</h2>
+                            <p>ئاماری چالاکی کڕێکارەکان و بڕی ستیکەرە لێدراوەکان بەپێی مانگ.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Side-by-Side Activity Report & Worker Leaderboard -->
+                <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; align-items: start;">
+                    <!-- Activity Report Widget -->
+                    <div class="recent-stickers-card">
+                        <div class="card-header">
+                            <h3>📊 ڕاپۆرتی چالاکی کڕێکارەکان (ئەم مانگە)</h3>
+                            <button class="view-all export-excel-btn" id="exportReportBtn">📊 هەناردەکردن (Excel)</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table" style="min-width: unset; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>ناوی کڕێکار</th>
+                                        <th>کۆی ستیکەری لێدراو</th>
+                                        <th>ژمارەی ئیشەکان</th>
+                                        <th>دوایین چالاکی</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="workerReportTableBody">
+                                    <!-- Worker stats will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard Widget -->
+                    <div class="recent-stickers-card" style="padding: 24px; background: #ffffff; border: 1px solid rgba(251, 191, 36, 0.15);">
+                        <div class="card-header" style="margin-bottom: 15px;">
+                            <h3 style="font-size: 1.15rem; color: #fbbf24;">🏆 ڕیزبەندی کڕێکارەکان</h3>
+                        </div>
+                        <div id="workerLeaderboardList" style="display: flex; flex-direction: column; gap: 12px;">
+                            <!-- Dynamic leaderboard rows will be added here -->
+                            <div style="text-align: center; color: #6b7280; padding: 20px 0;">هیچ تۆمارێک نییە تا ڕیزبەندی دروست بکرێت.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Premium Interactive Charts Rows -->
+                <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 20px; margin-top: 25px;">
+                    <!-- Chart 1: Worker Productivity (Bar Chart) -->
+                    <div class="recent-stickers-card" style="padding: 24px; min-height: 380px; background: #ffffff; border: 1px solid rgba(168, 85, 247, 0.15); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);">
+                        <div class="card-header" style="margin-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px;">
+                            <h3 style="color: #a855f7; display: flex; align-items: center; gap: 8px;">📊 چالاکی و بەرهەمهێنانی کڕێکارەکان</h3>
+                        </div>
+                        <div style="position: relative; height: 280px; width: 100%;">
+                            <canvas id="workerProductivityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 2: Inventory Share (Doughnut Chart) -->
+                    <div class="recent-stickers-card" style="padding: 24px; min-height: 380px; background: #ffffff; border: 1px solid rgba(56, 189, 248, 0.15); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);">
+                        <div class="card-header" style="margin-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px;">
+                            <h3 style="color: #38bdf8; display: flex; align-items: center; gap: 8px;">🍩 دابەشبوونی کاڵاکان لە کۆگا</h3>
+                        </div>
+                        <div style="position: relative; height: 280px; width: 100%;">
+                            <canvas id="inventoryShareChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 3: Monthly Sticker Sales Trends (Line Chart - Full Width) -->
+                <div class="recent-stickers-card" style="padding: 24px; margin-top: 25px; min-height: 380px; background: #ffffff; border: 1px solid rgba(16, 185, 129, 0.15); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);">
+                    <div class="card-header" style="margin-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px;">
+                        <h3 style="color: #10b981; display: flex; align-items: center; gap: 8px;">📈 ڕەوتی فرۆشتن و بەکارهێنانی ستیکەر</h3>
+                    </div>
+                    <div style="position: relative; height: 280px; width: 100%;">
+                        <canvas id="stickerSalesTrendsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Small charts: Daily sales trend & Sales vs Waste (Compact) -->
+                <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-top: 25px; margin-bottom: 10px;">
+                    <!-- Chart 4: Daily Sales Trend (Line Chart) -->
+                    <div class="recent-stickers-card" style="padding: 16px 20px; min-height: 250px; background: #ffffff; border: 1px solid rgba(16, 185, 129, 0.15); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.03);">
+                        <div class="card-header" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 6px;">
+                            <h3 style="color: #10b981; display: flex; align-items: center; gap: 8px; font-size: 0.95rem;">📈 ڕەوتی فرۆشتنی ڕۆژانەی ستیکەر</h3>
+                        </div>
+                        <div style="position: relative; height: 160px; width: 100%;">
+                            <canvas id="dashboardDailySalesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 5: Sales vs Waste (Doughnut Chart) -->
+                    <div class="recent-stickers-card" style="padding: 16px 20px; min-height: 250px; background: #ffffff; border: 1px solid rgba(239, 68, 68, 0.15); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.03);">
+                        <div class="card-header" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 6px;">
+                            <h3 style="color: #ef4444; display: flex; align-items: center; gap: 8px; font-size: 0.95rem;">🍩 فرۆشتن بەرامبەر تکجوو (وێرانبوون)</h3>
+                        </div>
+                        <div style="position: relative; height: 160px; width: 100%;">
+                            <canvas id="dashboardSalesWasteChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Inventory (Professional Edition) -->
+            <div id="sectionInventory" class="page-section" style="display: none;">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>کۆنتڕۆڵ و بەڕێوەبردنی مەوجودات 📦</h2>
+                            <p>بەدواداچوون، پشکنین و کۆنتڕۆڵی پڕۆفیشناڵی بڕی مەوجودات و ستیکەرەکان.</p>
+                        </div>
+                        <div class="header-actions" style="display: flex; gap: 10px;">
+                            <button class="add-btn" id="inventoryExportBtn" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.2);">
+                                📊 هەناردەکردنی ئەم لیستە (Excel)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory Statistics Row -->
+                <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                    <div class="stat-card" style="background: #ffffff; border: 1px solid rgba(56, 189, 248, 0.15);">
+                        <div class="stat-icon" style="background: rgba(56, 189, 248, 0.1); color: #38bdf8; margin-bottom: 0;">📦</div>
+                        <div class="stat-info">
+                            <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 5px;">کۆی گشتی کاڵاکان</p>
+                            <h3 id="invTotalProducts" style="font-size: 1.5rem; font-weight: 700; color: #1f2937;">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: #ffffff; border: 1px solid rgba(251, 191, 36, 0.15);">
+                        <div class="stat-icon" style="background: rgba(251, 191, 36, 0.1); color: #fbbf24; margin-bottom: 0;">🏷️</div>
+                        <div class="stat-info">
+                            <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 5px;">کۆی ستیکەری بەردەست</p>
+                            <h3 id="invTotalStickers" style="font-size: 1.5rem; font-weight: 700; color: #fbbf24;">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: #ffffff; border: 1px solid rgba(16, 185, 129, 0.15);">
+                        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981; margin-bottom: 0;">💰</div>
+                        <div class="stat-info">
+                            <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 5px;">بەهای گشتی کاڵاکان</p>
+                            <h3 id="invTotalValue" style="font-size: 1.3rem; font-weight: 700; color: #10b981;">0 IQD</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: #ffffff; border: 1px solid rgba(239, 68, 68, 0.15);">
+                        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; margin-bottom: 0;">⚠️</div>
+                        <div class="stat-info">
+                            <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 5px;">کەمترین مەوجودات</p>
+                            <h3 id="invLowStockAlerts" style="font-size: 1.5rem; font-weight: 700; color: #ef4444;">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Physical Shelf Map Widget -->
+                <div class="recent-stickers-card" style="padding: 24px; margin-bottom: 25px; border: 1px solid rgba(168, 85, 247, 0.2); background: #ffffff;">
+                    <div class="card-header" style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 12px; margin-bottom: 15px;">
+                        <h3 style="color: #a855f7; display: flex; align-items: center; gap: 8px;">🗺️ نەخشەی فیزیکی و ڕەفەکانی کۆگا</h3>
+                        <span style="font-size: 0.75rem; color: #6b7280; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.2); padding: 4px 10px; border-radius: 20px;">بینینی ڕاستەوخۆ (Interactive Shelf Live View)</span>
+                    </div>
+                    <div style="padding: 5px;">
+                        <div style="font-size: 0.8rem; color: #6b7280; margin-bottom: 15px; background: rgba(168, 85, 247, 0.04); padding: 10px 14px; border-radius: 8px; border: 1px dashed rgba(168, 85, 247, 0.2); line-height: 1.4;">
+                            💡 کلیک لەسەر هەر یەک لە ڕەفەکان بکە بۆ دەرکەوتنی وردەکاری کاڵاکانی سەر ئەو ڕەفەیە و گۆڕینی خێرای بڕی مەوجود لە شوێنی خۆیدا.
+                        </div>
+                        <div style="display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap;">
+                            <!-- Shelf Map Grid -->
+                            <div style="flex: 1.5; min-width: 320px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px;" id="shelfMapGrid">
+                                <!-- Populated dynamically by javascript -->
+                            </div>
+                            
+                            <!-- Shelf Active Detail Panel -->
+                            <div style="flex: 1; min-width: 280px; background: rgba(15,23,42,0.4); border: 1px solid rgba(0,0,0,0.05); border-radius: 12px; padding: 15px; min-height: 220px;" id="shelfDetailPanel">
+                                <h4 style="margin-top: 0; color: #38bdf8; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px;" id="shelfDetailTitle">📍 زانیاری ڕەفە</h4>
+                                <div id="shelfDetailContent" style="color: #6b7280; font-size: 0.82rem; text-align: center; padding-top: 50px;">
+                                    کلیک لەسەر ڕەفەیەکی نەخشەکە بکە بۆ دیتنی بەرهەمەکان...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional Filter Controls -->
+                <div class="recent-stickers-card" style="padding: 24px; margin-bottom: 25px; border: 1px solid rgba(0,0,0,0.05); background: #ffffff;">
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px;">
+                            <h4 style="color: #38bdf8; font-size: 1rem; display: flex; align-items: center; gap: 8px;">
+                                🔍 فلتەری پڕۆفیشناڵ و گەڕانی خێرا
+                            </h4>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <span style="font-size: 0.8rem; color: #6b7280;">پیشاندانی شێوازی بینین:</span>
+                                <div style="display: flex; background: rgba(243,244,246,1); padding: 4px; border-radius: 8px;">
+                                    <button id="viewToggleTable" class="tab-btn active" style="padding: 6px 12px; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s;">📋 خشتە</button>
+                                    <button id="viewToggleGrid" class="tab-btn" style="padding: 6px 12px; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s; margin-right: 4px;">🎴 کارد</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 15px;">
+                            <!-- Search -->
+                            <div class="input-group">
+                                <label style="font-size: 0.75rem; color: #6b7280; margin-bottom: 6px; display: block;">گەڕان لە مەوجودات</label>
+                                <input type="text" id="invSearchInput" placeholder="ناوی بەرهەم، کۆد، یان باچ بنووسە..." style="width:100%; background: rgba(255,255,255,0.9); border: 1px solid #d1d5db; padding: 10px 14px; border-radius: 8px; color: #1f2937;">
+                            </div>
+                            <!-- Status Filter -->
+                            <div class="input-group">
+                                <label style="font-size: 0.75rem; color: #6b7280; margin-bottom: 6px; display: block;">بارودۆخی ستیکەر/مەوجود</label>
+                                <select id="invStatusFilter" style="width:100%; background: #f9fafb; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; color: #1f2937;">
+                                    <option value="all">پیشاندانی هەموو</option>
+                                    <option value="in_stock">مەوجودات (سەلامەت)</option>
+                                    <option value="low_stock">مەوجوداتی کەم (Low Stock)</option>
+                                    <option value="out_of_stock">کۆتایی هاتووە (Out of Stock)</option>
+                                    <option value="exp_soon">نزیک لە بەسەرچوون (Expiring soon)</option>
+                                </select>
+                            </div>
+                            <!-- Sort options -->
+                            <div class="input-group">
+                                <label style="font-size: 0.75rem; color: #6b7280; margin-bottom: 6px; display: block;">ڕیزبەندکردن بەپێی</label>
+                                <select id="invSortFilter" style="width:100%; background: #f9fafb; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; color: #1f2937;">
+                                    <option value="name_asc">ناو (A-Z)</option>
+                                    <option value="name_desc">ناو (Z-A)</option>
+                                    <option value="qty_desc">بڕی مەوجود (زۆرترین)</option>
+                                    <option value="qty_asc">بڕی مەوجود (کەمترین)</option>
+                                    <option value="sticker_desc">بڕی ستیکەر (زۆرترین)</option>
+                                    <option value="exp_asc">بەرواری بەسەرچوون (نزیکترین)</option>
+                                </select>
+                            </div>
+                            <!-- Company Filter -->
+                            <div class="input-group">
+                                <label style="font-size: 0.75rem; color: #6b7280; margin-bottom: 6px; display: block;">کۆمپانیا</label>
+                                <select id="invCompanyFilter" style="width:100%; background: #f9fafb; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; color: #1f2937;">
+                                    <option value="all">هەموو کۆمپانیاکان</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area: Dynamic views -->
+                <div id="invContainer">
+                    <!-- Table View (Default) -->
+                    <div id="invTableView" class="recent-stickers-card" style="padding: 24px;">
+                        <div class="table-container">
+                            <table class="data-table" style="min-width: 1300px; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>باچ</th>
+                                        <th>کۆد</th>
+                                        <th>ناوی بەرهەم</th>
+                                        <th>بڕی کۆگا (QTY)</th>
+                                        <th>بڕی ستیکەرەکان</th>
+                                        <th>نرخی تاک</th>
+                                        <th>کۆی بەها</th>
+                                        <th>شوێن</th>
+                                        <th>کۆمپانیا</th>
+                                        <th>ماوەی بەسەرچوون</th>
+                                        <th>کردارە خێراکان</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invTableBody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Grid Card View -->
+                    <div id="invGridView" class="inventory-results-grid" style="display: none;">
+                        <!-- Dynamic cards -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== Section: Payroll / Attendance ==================== -->
+            <div id="sectionPayroll" class="page-section" style="display:none;">
+
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>💵 مووچە و ئامارەی کارکردنی ڕوژانە</h2>
+                            <p>تۆمارکردنی سەعاتی کارکردنی ڕوژانە بۆ هەر کڕێکارێک — مووچە = (سەعات × نرخی سەعات) + مووچەی ڕوژانەی دیاریکراو</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Row -->
+                <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:rgba(34,197,94,.1);color:#22c55e;">📅</div>
+                        <div class="stat-info">
+                            <p style="color:#6b7280;font-size:.8rem;margin-bottom:5px;">تۆمارەکانی ئەمڕۆ</p>
+                            <h3 id="payTodayCount" style="font-size:1.8rem;font-weight:700;">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:rgba(251,191,36,.1);color:#fbbf24;">⏱️</div>
+                        <div class="stat-info">
+                            <p style="color:#6b7280;font-size:.8rem;margin-bottom:5px;">کۆی سەعاتی زیادە</p>
+                            <h3 id="payTodayHours" style="font-size:1.8rem;font-weight:700;">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:rgba(56,189,248,.1);color:#38bdf8;">💰</div>
+                        <div class="stat-info">
+                            <p style="color:#6b7280;font-size:.8rem;margin-bottom:5px;">مووچەی زیادەی ئەمڕۆ</p>
+                            <h3 id="payTodayLoads" style="font-size:1.8rem;font-weight:700;">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:rgba(168,85,247,.1);color:#a855f7;">💰</div>
+                        <div class="stat-info">
+                            <p style="color:#6b7280;font-size:.8rem;margin-bottom:5px;">کۆی گشتی مووچە</p>
+                            <h3 id="payTodayTotal" style="font-size:1.5rem;font-weight:700;">0 د.ع</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid" style="grid-template-columns: 1.15fr 1.5fr; margin-top:20px; gap: 20px;">
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+
+                        <!-- Quick Clock-In/Clock-Out Control Panel -->
+                        <div class="recent-stickers-card" style="background: #ffffff; border: 1px solid rgba(34, 197, 94, 0.2); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);">
+                            <div class="card-header" style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 12px;">
+                                <h3 style="color: #22c55e; display: flex; align-items: center; gap: 8px;">⏰ دەفتەری حزوور و غیابی ئەلیکترۆنی</h3>
+                            </div>
+                            <div style="padding: 20px;">
+                                <div style="font-size: 0.8rem; color: #6b7280; margin-bottom: 15px; background: rgba(34, 197, 94, 0.05); padding: 10px 14px; border-radius: 8px; border: 1px dashed rgba(34, 197, 94, 0.2); line-height: 1.4;">
+                                    💡 لێرەدا دەتوانیت دەستپێکردن و تەواوبوونی دەوامی کڕێکاران لێبدەیت تا خۆکار کاتی کارکردن و سەعاتی زیادە (Overtime) حساب بکرێت.
+                                </div>
+                                <div id="quickClockList" style="display: flex; flex-direction: column; gap: 12px; max-height: 250px; overflow-y: auto; padding-right: 5px;">
+                                    <div style="text-align: center; color: #6b7280; padding: 20px 0;">هیچ کڕێکارێک تۆمار نەکراوە.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form: Add Daily Record -->
+                        <div class="recent-stickers-card">
+                            <div class="card-header"><h3>➕ تۆمارکردنی کارکردنی ڕوژانە</h3></div>
+                        <div style="padding:20px;">
+                            <form id="attendanceForm">
+                                <div class="input-group">
+                                    <label>کڕێکار</label>
+                                    <select id="attendanceWorkerSelect" required>
+                                        <option value="">هەڵبژێرە...</option>
+                                    </select>
+                                </div>
+                                <div class="form-grid-2" style="margin-top:12px;">
+                                    <div class="input-group">
+                                        <label>بەروار</label>
+                                        <input type="date" id="attendanceDate" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>مووچەی ڕۆژانەی دیاریکراو (Base د.ع)</label>
+                                        <input type="number" id="attendanceDailyRate" value="25000" min="0" required>
+                                    </div>
+                                </div>
+                                <div class="form-grid-2" style="margin-top:12px;">
+                                    <div class="input-group">
+                                        <label>سەعاتی کارکردنی زیادە (Overtime)</label>
+                                        <input type="number" id="attendanceHours" value="0" min="0" max="24" step="0.5" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>نرخی هەر سەعاتێکی زیادە (د.ع)</label>
+                                        <input type="number" id="attendanceHourlyRate" value="3000" min="0" required>
+                                    </div>
+                                </div>
+                                <div class="input-group" style="margin-top:12px;">
+                                    <label>تێبینی (ئارەزوومەندانە)</label>
+                                    <input type="text" id="attendanceNotes" placeholder="هەر تێبینییەک...">
+                                </div>
+
+                                <!-- Live Pay Preview -->
+                                <div id="payPreviewBox" style="margin-top:15px; padding:14px; background:rgba(34,197,94,.08); border:1px solid rgba(34,197,94,.25); border-radius:12px; display:none;">
+                                    <p style="color:#6b7280;font-size:.8rem;margin-bottom:6px;">پێشبینیی مووچە</p>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                                        <span style="color:#6b7280;font-size:.85rem;">مووچەی ڕۆژانەی دیاریکراو</span>
+                                        <strong id="payPreviewDaily" style="color:#fbbf24;">25,000 د.ع</strong>
+                                    </div>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                                        <span style="color:#6b7280;font-size:.85rem;">مووچەی سەعاتی زیادە (سەعات × نرخ)</span>
+                                        <strong id="payPreviewHourly" style="color:#38bdf8;">0 د.ع</strong>
+                                    </div>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,.1);padding-top:6px;margin-top:4px;">
+                                        <span style="color:#1f2937;font-weight:600;">کۆی گشتی مووچە</span>
+                                        <strong id="payPreviewCalc" style="color:#22c55e;font-size:1.15rem;">25,000 د.ع</strong>
+                                    </div>
+                                    </div>
+                                </div>
+
+                                <div class="input-group" style="margin-top:16px;">
+                                    <button type="submit" class="save-btn" style="width:100%;">✅ پاشکەوتکردن</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Summary per Worker -->
+                    <div class="recent-stickers-card">
+                        <div class="card-header">
+                            <h3>📊 ڕاپۆرتی هەفتانە بەپێی کڕێکار</h3>
+                            <div style="display:flex;gap:8px;align-items:center;">
+                                <select id="payrollWeekFilter" style="padding:6px 12px;border-radius:8px;border:1px solid #e5e7eb;background:#ffffff;color:#1f2937;font-size:.85rem;">
+                                    <option value="0">ئەم هەفتەیە</option>
+                                    <option value="1">هەفتەی تێپەڕبوو</option>
+                                    <option value="2">دوو هەفتەی تێپەڕبوو</option>
+                                    <option value="4">مانگی ئەمساڵ</option>
+                                </select>
+                                <button class="view-all export-excel-btn" id="exportPayrollBtn">📊 Excel</button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>کڕێکار</th>
+                                        <th>ڕۆژەکان</th>
+                                        <th>کۆی سەعاتی زیادە</th>
+                                        <th>مووچەی کارکردنی زیادە</th>
+                                        <th>مووچەی ڕۆژانەی دیاری</th>
+                                        <th>کۆی مووچە</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="payrollSummaryBody"></tbody>
+                            </table>
+                        </div>
+                        <div style="padding:12px 20px; border-top:1px solid rgba(255,255,255,.06); display:flex; justify-content:space-between; align-items:center;">
+                            <span style="color:#6b7280;font-size:.85rem;">کۆی گشتی مووچەی هەفتەکە:</span>
+                            <strong id="payrollGrandTotal" style="color:#22c55e;font-size:1.1rem;">0 د.ع</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Records Table -->
+                <div class="dashboard-grid" style="margin-top:20px;">
+                    <div class="recent-stickers-card">
+                        <div class="card-header">
+                            <h3>📋 هەموو تۆمارەکان</h3>
+                            <div style="display:flex;gap:8px;">
+                                <select id="payrollRecordWorkerFilter" style="padding:6px 12px;border-radius:8px;border:1px solid #e5e7eb;background:#ffffff;color:#1f2937;font-size:.85rem;">
+                                    <option value="">هەموو کڕێکارەکان</option>
+                                </select>
+                                <input type="date" id="payrollRecordDateFilter" style="padding:6px 12px;border-radius:8px;border:1px solid #e5e7eb;background:#ffffff;color:#1f2937;font-size:.85rem;">
+                                <button onclick="clearPayrollFilters()" style="padding:6px 12px;border-radius:8px;border:1px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;">✕ پاکردنەوە</button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>کڕێکار</th>
+                                        <th>بەروار</th>
+                                        <th>سەعاتی زیادە</th>
+                                        <th>نرخی سەعاتی زیادە</th>
+                                        <th>مووچەی ڕۆژانەی دیاری</th>
+                                        <th>کۆی گشتی مووچە</th>
+                                        <th>تێبینی</th>
+                                        <th>کردار</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendanceTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- End Payroll Section -->
+
+            <!-- Section: Settings / Catalog -->
+            <div id="sectionSettings" class="page-section" style="display: none;">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>⚙️ ڕێکخستن و بنکەدراوەی بەرهەمەکان</h2>
+                            <p>بەڕێوەبردنی زانیارییە بنەڕەتییەکانی بەرهەمەکان (کۆد، باچ، ناو و نرخ) بۆ پڕکردنەوەی خۆکاری خێرا.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-top: 20px;">
+                    <!-- Left Card: Add/Edit Catalog Entry -->
+                    <div class="recent-stickers-card" style="padding: 24px; background: #ffffff; border: 1px solid var(--border-color); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 15px;">
+                        <h3 id="catalogFormTitle" style="color: #6366f1; margin: 0; display: flex; align-items: center; gap: 8px; font-size: 1.15rem;">📝 زیادکردنی زانیاری سەرەتایی</h3>
+                        
+                        <!-- Tabs for Settings Catalog -->
+                        <div class="modal-tabs" style="display: flex; gap: 10px; border-bottom: 2px solid var(--border-color); margin-bottom: 10px;">
+                            <button type="button" class="tab-btn active" id="catalogTabManual" onclick="switchCatalogTab('manual')" style="flex: 1; padding: 10px; border: none; border-bottom: 2px solid #6366f1; background: none; font-weight: 600; cursor: pointer; color: var(--text-main); font-size: 0.9rem;">✏️ داخڵکردنی دەستی</button>
+                            <button type="button" class="tab-btn" id="catalogTabPaste" onclick="switchCatalogTab('paste')" style="flex: 1; padding: 10px; border: none; border-bottom: 2px solid transparent; background: none; font-weight: 600; cursor: pointer; color: var(--text-muted); font-size: 0.9rem;">📋 کۆپی لە Excel</button>
+                        </div>
+
+                        <!-- Manual Entry Content -->
+                        <div id="catalogContentManual">
+                            <form id="catalogForm">
+                                <input type="hidden" id="catalogId">
+                                <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                                    <div class="input-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">ژمارەی باچ (BATCH)</label>
+                                        <input type="text" id="catalogBatchNo" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main);">
+                                    </div>
+                                    <div class="input-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">کۆدی بەرهەم</label>
+                                        <input type="text" id="catalogProductCode" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main);">
+                                    </div>
+                                </div>
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px;">
+                                    <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">ناوی بەرهەم</label>
+                                    <input type="text" id="catalogProductName" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main);">
+                                </div>
+                                <div class="form-grid-3" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                                    <div class="input-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">نرخ</label>
+                                        <input type="number" id="catalogPrice" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main);">
+                                    </div>
+                                    <div class="input-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">شوێن</label>
+                                        <input type="text" id="catalogLocation" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main);">
+                                    </div>
+                                    <div class="input-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">کۆمپانیا</label>
+                                        <input type="text" id="catalogCompany" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main);">
+                                    </div>
+                                </div>
+                                <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                                    <div class="input-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">ژمارەی مۆڵەت (P.No)</label>
+                                        <input type="text" id="catalogPNumber" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main);">
+                                    </div>
+                                    <div class="input-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">بەرواری بەسەرچوون</label>
+                                        <input type="date" id="catalogExpDate" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main);">
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                                    <button type="button" class="cancel-btn" id="clearCatalogBtn" style="padding: 10px 20px; border-radius: 8px;">پاککردنەوە</button>
+                                    <button type="submit" class="save-btn" style="padding: 10px 20px; border-radius: 8px;">تۆمارکردن</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Excel Paste Entry Content -->
+                        <div id="catalogContentPaste" style="display: none;">
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">کۆڵۆمەکان بەپێی ئەم ڕیزبەندییە کۆپی بکە لە Excel:<br><b>باچ ➔ کۆدی بەرهەم ➔ ناوی بەرهەم ➔ بڕ ➔ شوێن ➔ بڕی ستیکەر ➔ نرخ ➔ ژمارەی مۆڵەت ➔ کۆمپانیا ➔ بەرواری وەرگرتن ➔ بەرواری بەسەرچوون</b></p>
+                            <textarea id="catalogPasteArea" placeholder="لێرە کۆپی پێست بکە..." style="width: 100%; height: 180px; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main); font-family: monospace; font-size: 0.85rem; resize: vertical; margin-bottom: 15px;"></textarea>
+                            <div id="catalogPastePreview" style="margin-bottom: 15px;"></div>
+                            <div style="display: flex; justify-content: flex-end;">
+                                <button type="button" id="importCatalogPasteBtn" class="save-btn" style="padding: 10px 20px; border-radius: 8px;">📋 هاوردەکردن بۆ بنکەدراوە</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Card: Catalog List -->
+                    <div class="recent-stickers-card" style="padding: 24px; display: flex; flex-direction: column; background: #ffffff; border: 1px solid var(--border-color); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.03);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px;">
+                            <h3 style="color: #10b981; margin: 0; display: flex; align-items: center; gap: 8px; font-size: 1.15rem;">📋 لیستی زانیارییە خەزنکراوەکان</h3>
+                            <input type="text" id="catalogSearch" placeholder="بگەڕێ..." style="max-width: 200px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main); font-size: 0.85rem;">
+                        </div>
+                        <div style="flex: 1; overflow-y: auto; max-height: 400px; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <table class="payroll-summary-table" style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: rgba(0,0,0,0.02); text-align: right;">
+                                        <th style="padding: 12px; font-weight: 600; font-size: 0.85rem; color: var(--text-main);">باچ / کۆد</th>
+                                        <th style="padding: 12px; font-weight: 600; font-size: 0.85rem; color: var(--text-main);">ناوی ماددە</th>
+                                        <th style="padding: 12px; font-weight: 600; font-size: 0.85rem; color: var(--text-main);">کۆمپانیا</th>
+                                        <th style="padding: 12px; text-align: center; font-weight: 600; font-size: 0.85rem; color: var(--text-main);">کردارەکان</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="catalogTableBody">
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== Section: Label Print ==================== -->
+            <div id="sectionLabelPrint" class="page-section" style="display: none;">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>🖨️ چاپکردنی لایبڵی ستیکەر</h2>
+                            <p>هەڵبژێرە کام بەرهەم چاپ بکرێت — لایبڵی ستیکەر بۆ بەرهەمەکان چاپ دەکرێت.</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="add-btn" onclick="printSelectedLabels()" style="background: linear-gradient(135deg,#6366f1,#4f46e5);">
+                                <span class="icon">🖨️</span> چاپکردن
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Label Settings -->
+                <div class="recent-stickers-card" style="padding: 20px 24px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 16px; color: #6366f1;">⚙️ ڕێکخستنی لایبڵ</h3>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+                        <div class="input-group">
+                            <label>ژمارەی لایبڵ بۆ هەر بەرهەمێک</label>
+                            <input type="number" id="labelCopyCount" value="1" min="1" max="100" style="width:100%;">
+                        </div>
+                        <div class="input-group">
+                            <label>قەبارەی فۆنت (px)</label>
+                            <input type="number" id="labelFontSize" value="11" min="8" max="18" style="width:100%;">
+                        </div>
+                        <div class="input-group">
+                            <label>پانی لایبڵ (mm)</label>
+                            <input type="number" id="labelWidth" value="90" min="40" max="200" style="width:100%;">
+                        </div>
+                        <div class="input-group">
+                            <label>بەرزی لایبڵ (mm)</label>
+                            <input type="number" id="labelHeight" value="50" min="20" max="150" style="width:100%;">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap;">
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.9rem;">
+                            <input type="checkbox" id="labelShowBatch" checked style="width:16px;height:16px;"> ژمارەی باچ
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.9rem;">
+                            <input type="checkbox" id="labelShowCode" checked style="width:16px;height:16px;"> کۆدی بەرهەم
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.9rem;">
+                            <input type="checkbox" id="labelShowExpDate" checked style="width:16px;height:16px;"> بەرواری بەسەرچوون
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.9rem;">
+                            <input type="checkbox" id="labelShowLocation" checked style="width:16px;height:16px;"> شوێن
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.9rem;">
+                            <input type="checkbox" id="labelShowCompany" checked style="width:16px;height:16px;"> کۆمپانیا
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.9rem;">
+                            <input type="checkbox" id="labelShowPrice" style="width:16px;height:16px;"> نرخ
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.9rem;">
+                            <input type="checkbox" id="labelShowPNumber" style="width:16px;height:16px;"> ژمارەی مۆڵەت
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Product Selection for Labels -->
+                <div class="recent-stickers-card" style="padding: 20px 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                        <h3 style="margin:0;">📦 هەڵبژاردنی بەرهەمەکان</h3>
+                        <div style="display:flex; gap:8px;">
+                            <button onclick="selectAllForPrint()" style="background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3); color:#6366f1; padding:6px 14px; border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer;">✅ هەموو هەڵبژێرە</button>
+                            <button onclick="deselectAllForPrint()" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); color:#ef4444; padding:6px 14px; border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer;">✕ هەموو هەڵبژاردن بسڕەوە</button>
+                        </div>
+                    </div>
+                    <!-- Search within label list -->
+                    <div style="position:relative; margin-bottom:14px;">
+                        <span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); pointer-events:none;">🔍</span>
+                        <input type="text" id="labelSearchInput" placeholder="بگەڕێ بەپێی ناو یان باچ..." oninput="renderLabelProductList()" style="width:100%; padding:9px 36px 9px 12px; border-radius:10px; border:1.5px solid var(--border-color); background:var(--modal-input-bg); color:var(--text-main); font-size:0.9rem; box-sizing:border-box;">
+                    </div>
+                    <div id="labelProductList" style="max-height: 380px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px;">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Print Preview -->
+                <div id="labelPreviewSection" style="margin-top:20px; display:none;">
+                    <div class="recent-stickers-card" style="padding:20px 24px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                            <h3 style="margin:0; color:#6366f1;">👁️ پیشاندانی پێشخستن</h3>
+                            <button onclick="window.print()" class="add-btn" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">
+                                🖨️ چاپکردن
+                            </button>
+                        </div>
+                        <div id="labelPreviewContainer" style="display:flex; flex-wrap:wrap; gap:8px; background:#f9fafb; padding:16px; border-radius:10px; border:1px dashed #d1d5db; min-height:100px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END: Section: Label Print -->
+
+            <!-- ==================== Section: Barcode Search ==================== -->
+            <div id="sectionBarcodeSearch" class="page-section" style="display: none;">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>📦 گەڕانی بارکۆد / QR</h2>
+                            <p>بارکۆد یان QR کۆدی بەرهەم بسکێنە بۆ بینینی وردەکارییەکانی خێرا.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- Scanner Panel -->
+                    <div class="recent-stickers-card" style="padding: 24px;">
+                        <h3 style="margin-bottom:16px; color:#10b981;">🎥 سکانکردن بە کامێرا</h3>
+                        <div id="barcodeVideo" style="width:100%; border-radius:12px; overflow:hidden; background:#1e293b; min-height:250px; display:flex; align-items:center; justify-content:center; position:relative;">
+                            <video id="barcodeWebcam" autoplay playsinline style="width:100%; border-radius:12px; display:none;"></video>
+                            <div id="barcodeStartPrompt" style="text-align:center; color:#6b7280;">
+                                <div style="font-size:3rem;">📷</div>
+                                <p style="margin-top:10px; font-size:0.9rem;">بۆ دەستپێکردن، دوگمەی خوارەوە کلیک بکە</p>
+                            </div>
+                            <!-- scan line animation -->
+                            <div id="barcodeScanLine" style="display:none; position:absolute; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#10b981,transparent); animation:scanLine 1.5s linear infinite; top:50%;"></div>
+                        </div>
+                        <div style="display:flex; gap:10px; margin-top:14px;">
+                            <button id="barcodeStartBtn" onclick="startBarcodeScanner()" class="save-btn" style="flex:1; background:linear-gradient(135deg,#10b981,#059669);">▶ دەستپێکردن</button>
+                            <button id="barcodeStopBtn" onclick="stopBarcodeScanner()" class="cancel-btn" style="flex:1; display:none;">⏹ وەستان</button>
+                        </div>
+                        <!-- Manual text input -->
+                        <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border-color);">
+                            <label style="font-size:0.85rem; color:#6b7280; margin-bottom:6px; display:block;">یان دەستی داخڵ بکە:</label>
+                            <div style="display:flex; gap:8px;">
+                                <input type="text" id="barcodeManualInput" placeholder="باچ، کۆد، یان ناوی بەرهەم..." style="flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border-color); background:var(--modal-input-bg); color:var(--text-main); font-size:0.9rem;" onkeydown="if(event.key==='Enter') searchByBarcode(this.value)">
+                                <button onclick="searchByBarcode(document.getElementById('barcodeManualInput').value)" class="save-btn" style="padding:10px 18px;">🔍</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Result Panel -->
+                    <div class="recent-stickers-card" style="padding: 24px;">
+                        <h3 style="margin-bottom:16px; color:#6366f1;">📋 ئەنجامی گەڕان</h3>
+                        <div id="barcodeResult" style="min-height:250px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#6b7280; gap:10px;">
+                            <div style="font-size:3rem;">🔍</div>
+                            <p style="font-size:0.9rem;">هێشتا هیچ بەرهەمێک نەگەڕاوە</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scan History -->
+                <div class="recent-stickers-card" style="padding:20px 24px; margin-top:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="margin:0;">🕒 مێژووی سکان</h3>
+                        <button onclick="clearScanHistory()" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); color:#ef4444; padding:5px 12px; border-radius:8px; font-size:0.8rem; cursor:pointer;">🗑 پاکردنەوە</button>
+                    </div>
+                    <div id="scanHistoryList" style="display:flex; flex-direction:column; gap:8px; max-height:250px; overflow-y:auto;">
+                        <div style="text-align:center; color:#6b7280; padding:20px; font-size:0.85rem;">هیچ سکانێک نەکراوە</div>
+                    </div>
+                </div>
+            </div>
+            <!-- END: Section: Barcode Search -->
+
+            <!-- ==================== Section: Backup & Restore ==================== -->
+            <div id="sectionBackup" class="page-section" style="display: none;">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>💾 باکئەپ و گەڕانەوەی داتا</h2>
+                            <p>هەموو داتاکانی سیستەمت پاشکەوت بکە و هەر کاتێک بیگەڕێنەوە.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 10px;">
+                    <!-- Export Card -->
+                    <div class="recent-stickers-card" style="padding: 28px; border: 2px solid rgba(16,185,129,0.2);">
+                        <div style="text-align:center; margin-bottom:20px;">
+                            <div style="font-size:3.5rem;">⬇️</div>
+                            <h3 style="color:#10b981; margin:10px 0 6px;">هەناردەکردنی باکئەپ</h3>
+                            <p style="color:#6b7280; font-size:0.85rem;">هەموو داتاکانت (بەرهەم، فرۆشتن، کڕێکار، تکجوو) پاشکەوت بکە بە فایلی JSON</p>
+                        </div>
+                        <!-- Backup Stats -->
+                        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:16px; margin-bottom:20px;">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                <div style="text-align:center;">
+                                    <div style="font-size:1.6rem; font-weight:700; color:#10b981;" id="backupProductCount">0</div>
+                                    <div style="font-size:0.75rem; color:#6b7280;">📦 بەرهەم</div>
+                                </div>
+                                <div style="text-align:center;">
+                                    <div style="font-size:1.6rem; font-weight:700; color:#3b82f6;" id="backupSalesCount">0</div>
+                                    <div style="font-size:0.75rem; color:#6b7280;">🛒 فرۆشتن</div>
+                                </div>
+                                <div style="text-align:center;">
+                                    <div style="font-size:1.6rem; font-weight:700; color:#f59e0b;" id="backupWorkerCount">0</div>
+                                    <div style="font-size:0.75rem; color:#6b7280;">👷 کڕێکار</div>
+                                </div>
+                                <div style="text-align:center;">
+                                    <div style="font-size:1.6rem; font-weight:700; color:#a855f7;" id="backupCatalogCount">0</div>
+                                    <div style="font-size:0.75rem; color:#6b7280;">📋 کاتالۆگ</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="exportBackup()" class="save-btn" style="width:100%; padding:14px; font-size:1rem; font-weight:700; background:linear-gradient(135deg,#10b981,#059669); box-shadow:0 8px 15px rgba(16,185,129,0.25);">
+                            ⬇️ هەناردەکردنی هەموو داتاکان (.json)
+                        </button>
+                        <div id="lastBackupInfo" style="text-align:center; color:#6b7280; font-size:0.78rem; margin-top:12px;">—</div>
+                    </div>
+
+                    <!-- Import Card -->
+                    <div class="recent-stickers-card" style="padding: 28px; border: 2px solid rgba(99,102,241,0.2);">
+                        <div style="text-align:center; margin-bottom:20px;">
+                            <div style="font-size:3.5rem;">⬆️</div>
+                            <h3 style="color:#6366f1; margin:10px 0 6px;">گەڕانەوەی باکئەپ</h3>
+                            <p style="color:#6b7280; font-size:0.85rem;">فایلی باکئەپی پێشووت بار بکە بۆ گەڕانەوەی داتاکان</p>
+                        </div>
+                        <!-- Warning -->
+                        <div style="background:rgba(239,68,68,0.07); border:1px dashed rgba(239,68,68,0.3); border-radius:10px; padding:12px; margin-bottom:20px; font-size:0.82rem; color:#ef4444; line-height:1.6;">
+                            ⚠️ ئاگادار بە! گەڕانەوەی باکئەپ هەموو داتای ئێستات دەگۆڕێت. پێش گەڕانەوە، باکئەپی داتای ئێستات بکە.
+                        </div>
+                        <!-- File drop zone -->
+                        <div id="backupDropZone" onclick="document.getElementById('backupFileInput').click()" style="border:2px dashed rgba(99,102,241,0.35); border-radius:12px; padding:30px; text-align:center; cursor:pointer; transition:all 0.2s; margin-bottom:16px; background:rgba(99,102,241,0.03);" ondragover="event.preventDefault(); this.style.background='rgba(99,102,241,0.08)'" ondragleave="this.style.background='rgba(99,102,241,0.03)'" ondrop="handleBackupDrop(event)">
+                            <div style="font-size:2rem; margin-bottom:8px;">📂</div>
+                            <p style="color:#6366f1; font-weight:600; font-size:0.9rem;">کلیک بکە یان فایل بکێشە ئێرە</p>
+                            <p style="color:#6b7280; font-size:0.78rem; margin-top:4px;">.json فایلی باکئەپ</p>
+                            <input type="file" id="backupFileInput" accept=".json" style="display:none;" onchange="handleBackupFile(this)">
+                        </div>
+                        <div id="backupFilePreview" style="display:none; background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.2); border-radius:10px; padding:14px; margin-bottom:16px;">
+                            <div id="backupFileInfo" style="font-size:0.85rem; color:var(--text-main);"></div>
+                        </div>
+                        <button id="restoreBtn" onclick="restoreBackup()" disabled class="save-btn" style="width:100%; padding:14px; font-size:1rem; font-weight:700; background:linear-gradient(135deg,#6366f1,#4f46e5); opacity:0.5; cursor:not-allowed; box-shadow:0 8px 15px rgba(99,102,241,0.25);">
+                            ⬆️ گەڕانەوەی داتاکان
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Backup Tips -->
+                <div class="recent-stickers-card" style="padding:20px 24px; margin-top:20px; border:1px solid rgba(251,191,36,0.2); background:rgba(251,191,36,0.03);">
+                    <h3 style="color:#f59e0b; margin-bottom:12px;">💡 سەرنجەکان</h3>
+                    <ul style="color:#6b7280; font-size:0.88rem; line-height:2; list-style:none; padding:0;">
+                        <li>✅ هەر هەفتەیەک باکئەپ بکە بۆ پاراستنی داتاکانت</li>
+                        <li>✅ فایلی باکئەپ لە شوێنێکی پارێزراو بخەرە (ئاوێتی، Google Drive، هتد)</li>
+                        <li>✅ پێش هەر گۆڕانکارییەکی گەورە، باکئەپ بکە</li>
+                        <li>⚠️ گەڕانەوەی باکئەپ داتای ئێستا دەگۆڕێت، باش بیرتی لێبکەرەوە</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- END: Section: Backup -->
+
+            <!-- ==================== Section: Advanced Stats ==================== -->
+            <div id="sectionAdvancedStats" class="page-section" style="display: none;">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>📈 داشبۆردی ئاماری گرافی</h2>
+                            <p>شیکردنەوەی داتاکانی سیستەمەکە بە شێوەی وێنەیی بۆ تێگەیشتنی خێرا.</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="add-btn" onclick="renderAdvancedCharts()" style="background: linear-gradient(135deg,#8b5cf6,#6d28d9);">
+                                <span class="icon">🔄</span> نوێکردنەوە
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats summary cards -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(99,102,241,0.05)); border: 1px solid rgba(99,102,241,0.2);">
+                        <div class="stat-icon" style="background: rgba(99,102,241,0.2); color: #6366f1;">📦</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statsTotalProducts">0</div>
+                            <div class="stat-label">کۆی بەرهەمەکان</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.05)); border: 1px solid rgba(16,185,129,0.2);">
+                        <div class="stat-icon" style="background: rgba(16,185,129,0.2); color: #10b981;">💰</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statsTotalInventoryValue">0 IQD</div>
+                            <div class="stat-label">بڕی سەرمایە (کڕین)</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.05)); border: 1px solid rgba(245,158,11,0.2);">
+                        <div class="stat-icon" style="background: rgba(245,158,11,0.2); color: #f59e0b;">🛒</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statsTotalSales">0</div>
+                            <div class="stat-label">کۆی فرۆشتنەکان</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05)); border: 1px solid rgba(239,68,68,0.2);">
+                        <div class="stat-icon" style="background: rgba(239,68,68,0.2); color: #ef4444;">⚠️</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statsExpiredSoon">0</div>
+                            <div class="stat-label">بەسەرچوون لە نزیکدا</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <!-- Line Chart -->
+                    <div class="recent-stickers-card" style="padding: 20px;">
+                        <h3 style="margin-bottom: 16px; color: var(--text-main);">📈 ترێندی فرۆشتنی ٣٠ ڕۆژی ڕابردوو</h3>
+                        <div style="position: relative; height: 300px; width: 100%;">
+                            <canvas id="salesTrendChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Doughnut Chart -->
+                    <div class="recent-stickers-card" style="padding: 20px;">
+                        <h3 style="margin-bottom: 16px; color: var(--text-main);">🏢 ڕێژەی بەرهەمەکان بەپێی کۆمپانیا</h3>
+                        <div style="position: relative; height: 300px; width: 100%; display: flex; justify-content: center;">
+                            <canvas id="companyPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- Bar Chart -->
+                    <div class="recent-stickers-card" style="padding: 20px;">
+                        <h3 style="margin-bottom: 16px; color: var(--text-main);">🔥 زۆرترین بەرهەمە فرۆشراوەکان</h3>
+                        <div style="position: relative; height: 250px; width: 100%;">
+                            <canvas id="topProductsChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Status Chart -->
+                    <div class="recent-stickers-card" style="padding: 20px;">
+                        <h3 style="margin-bottom: 16px; color: var(--text-main);">📅 دۆخی بەسەرچوونی بەرهەمەکان</h3>
+                        <div style="position: relative; height: 250px; width: 100%;">
+                            <canvas id="expiryStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END: Section: Advanced Stats -->
+
+
+
+            <!-- ==================== Section: Activity Log ==================== -->
+            <div id="sectionActivityLog" class="page-section" style="display: none;">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>تۆماری چاودێری (Activity Log) 🕵️‍♂️</h2>
+                            <p>چاودێری هەموو ئەو کارانە بکە کە لەلایەن بەکارهێنەرانەوە ئەنجامدراون.</p>
+                        </div>
+                        <div>
+                            <button onclick="clearActivityLogs()" style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600;">🗑️ سڕینەوەی هەموو تۆمارەکان</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-stickers-card" style="margin-top: 20px;">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>کات و ڕێکەوت</th>
+                                    <th>بەکارهێنەر</th>
+                                    <th>جۆری کار</th>
+                                    <th>وردەکاری</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activityLogTableBody">
+                                <!-- Logs populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- END: Section: Activity Log -->
+
+        </main>
+    </div>
+
+    <!-- Sticker Modal (Existing) -->
+    <div class="modal-overlay" id="stickerModal">
+        <div class="modal-card wide">
+            <div class="modal-header"><h3>زیادکردنی زانیاری بەرهەم</h3><button class="close-btn" id="closeModalBtn">&times;</button></div>
+            <div class="modal-tabs">
+                <button class="tab-btn active" id="tabManual" onclick="switchTab('manual')">✏️ داخڵکردنی دەستی</button>
+                <button class="tab-btn" id="tabPaste" onclick="switchTab('paste')">📋 کۆپی لە Excel</button>
+            </div>
+            <div id="tabContentManual">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: rgba(99, 102, 241, 0.05); padding: 10px 15px; border-radius: 10px; border: 1px dashed rgba(99, 102, 241, 0.2); direction: rtl; gap: 10px;">
+                    <span style="font-size: 0.82rem; color: #4b5563; font-weight: 600;">✨ دەتەوێت زانیارییەکان لە ڕێگەی کامێرا یان وێنەی لایبڵەوە بخوێنیتەوە؟</span>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" id="startCameraBtn" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 600;">
+                            🎥 سکان بە کامێرا
+                        </button>
+                        <button type="button" onclick="document.getElementById('labelImageInput').click()" style="background: #6366f1; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 600;">
+                            📷 بارکردنی وێنە
+                        </button>
+                    </div>
+                    <input type="file" id="labelImageInput" accept="image/*" style="display: none;">
+                </div>
+
+                <!-- Camera stream container -->
+                <div id="cameraScannerContainer" style="display: none; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 15px; background: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); position: relative; direction: rtl;">
+                    <video id="webcamVideo" autoplay playsinline style="width: 100%; max-width: 400px; border-radius: 8px; border: 2px solid #6366f1; transform: scaleX(-1); background: #000;"></video>
+                    <div style="display: flex; gap: 10px; width: 100%; justify-content: center;">
+                        <button type="button" id="captureBtn" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">📸 وێنەگرتن و سکان</button>
+                        <button type="button" id="closeCameraBtn" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">✕ داخستن</button>
+                    </div>
+                    <canvas id="webcamCanvas" style="display: none;"></canvas>
+                </div>
+                <form id="stickerForm">
+                    <div class="form-grid-3">
+                        <div class="input-group"><label>ژمارەی باچ (BATCH)</label><input type="text" id="batchNo" required></div>
+                        <div class="input-group"><label>کۆدی بەرهەم</label><input type="text" id="productCode" required></div>
+                        <div class="input-group"><label>ناوی بەرهەم</label><input type="text" id="productName" list="existingProductsList" required><datalist id="existingProductsList"></datalist></div>
+                    </div>
+                    <div class="form-grid-3">
+                        <div class="input-group"><label>بڕ (QTY)</label><input type="number" id="qty" required></div>
+                        <div class="input-group"><label>شوێن (Location)</label><input type="text" id="location" required></div>
+                        <div class="input-group"><label>بڕی ستیکەر</label><input type="number" id="stickerQty" required></div>
+                    </div>
+                    <div class="form-grid-3">
+                        <div class="input-group"><label>نرخ</label><input type="number" id="price" required></div>
+                        <div class="input-group"><label>ژمارەی مۆڵەت (P.No)</label><input type="text" id="pNumber" required></div>
+                        <div class="input-group"><label>کۆمپانیا</label><input type="text" id="company" required></div>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="input-group"><label>بەرواری وەرگرتن</label><input type="date" id="receivedDate" required></div>
+                        <div class="input-group"><label>بەرواری بەسەرچوون</label><input type="date" id="expDate" required></div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="cancel-btn" onclick="closeModal()">پاشگەزبوونەوە</button>
+                        <button type="submit" class="save-btn">پاشکەوتکردن</button>
+                    </div>
+                </form>
+            </div>
+            <div id="tabContentPaste" style="display:none">
+                <div class="paste-instructions">
+                    <div class="paste-info-box"><p>📋 Excel کۆپی بکە و لێرە پێیستی بکە.</p></div>
+                    <textarea id="pasteArea"></textarea>
+                    <div id="pastePreview" class="paste-preview"></div>
+                    <div class="modal-actions">
+                        <button type="button" class="cancel-btn" onclick="closeModal()">پاشگەزبوونەوە</button>
+                        <button type="button" class="save-btn" onclick="importPastedData()">⬆️ داخڵکردن</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Worker Modal -->
+    <div class="modal-overlay" id="workerModal">
+        <div class="modal-card">
+            <div class="modal-header"><h3>زیادکردنی کڕێکاری نوێ</h3><button class="close-btn" id="closeWorkerModalBtn">&times;</button></div>
+            <form id="workerForm">
+                <div class="input-group"><label>ناوی سیانی</label><input type="text" id="workerName" required></div>
+                <div class="form-grid-2">
+                    <div class="input-group"><label>ژمارەی مۆبایل</label><input type="text" id="workerPhone" required></div>
+                    <div class="input-group"><label>پیشە / کار</label><input type="text" id="workerJob" required></div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="input-group"><label>مووچە</label><input type="number" id="workerSalary" required></div>
+                    <div class="input-group"><label>بەرواری دەستپێکردن</label><input type="date" id="workerJoinDate" required></div>
+                </div>
+                <div class="input-group"><label>ناونیشان</label><input type="text" id="workerAddress" required></div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" id="cancelWorkerBtn">پاشگەزبوونەوە</button>
+                    <button type="submit" class="save-btn">پاشکەوتکردن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Excel Export Modal -->
+    <div class="modal-overlay" id="exportModal">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3>📊 هەناردەکردنی Excel</h3>
+                <button class="close-btn" id="closeExportModalBtn">&times;</button>
+            </div>
+            <div style="padding: 25px;">
+                <div id="exportTypeLabel" style="font-size: 1rem; color: #6b7280; margin-bottom: 20px; text-align: center;"></div>
+
+                <!-- Filter Options -->
+                <div id="exportFilterSection" style="background: rgba(255,255,255,0.03); border-radius: 12px; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.08);">
+                    <h4 style="color: #38bdf8; margin-bottom: 12px;">🔽 فلتەری هەناردەکردن</h4>
+                    <div class="form-grid-2">
+                        <div class="input-group">
+                            <label>لە بەرواری</label>
+                            <input type="date" id="exportFromDate">
+                        </div>
+                        <div class="input-group">
+                            <label>بۆ بەروار</label>
+                            <input type="date" id="exportToDate">
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin-top: 10px;" id="exportWorkerFilterDiv">
+                        <label>فلتەری کڕێکار (ئارەزوومەندانە)</label>
+                        <select id="exportWorkerFilter">
+                            <option value="">هەموو کڕێکارەکان</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Sheet Selection -->
+                <div style="background: rgba(255,255,255,0.03); border-radius: 12px; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.08);">
+                    <h4 style="color: #38bdf8; margin-bottom: 12px;">📋 هەڵبژاردنی شیتەکان</h4>
+                    <label style="display:flex; align-items:center; gap:10px; margin-bottom:10px; cursor:pointer;">
+                        <input type="checkbox" id="chkProducts" checked style="width:18px; height:18px;"> بەرهەمەکان
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; margin-bottom:10px; cursor:pointer;">
+                        <input type="checkbox" id="chkSales" checked style="width:18px; height:18px;"> مێژووی فرۆشتنەکان
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" id="chkWorkerReport" checked style="width:18px; height:18px;"> ڕاپۆرتی کڕێکارەکان
+                    </label>
+                </div>
+
+                <div id="exportStatusMsg" style="display:none; text-align:center; padding: 12px; border-radius: 8px; margin-bottom:15px;"></div>
+
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" id="cancelExportBtn">داخستن</button>
+                    <button type="button" class="save-btn" id="doExportBtn" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+                        ⬇️ هەناردەکردن
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Sale Modal -->
+    <div id="editSaleModal" class="modal-overlay" style="display:none; align-items:center; justify-content:center;">
+        <div class="modal-content" style="max-width:560px; width:95%;">
+            <div class="modal-header">
+                <h3>✏️ دەستکاریکردنی تۆمارێکی فرۆشتن</h3>
+                <button class="close-btn" id="closeEditSaleModalBtn">✕</button>
+            </div>
+            <div style="padding:20px;">
+                <input type="hidden" id="editSaleId">
+
+                <div class="input-group" style="margin-bottom:15px;">
+                    <label>📦 ناوی بەرهەم</label>
+                    <input type="text" id="editSaleProductName" disabled style="background:var(--modal-input-bg); color:var(--text-main); opacity:0.7; border-radius:10px; padding:10px; border:1px solid var(--border-color); width:100%;">
+                </div>
+
+                <div class="input-group" style="margin-bottom:15px;">
+                    <label>📍 شوێنی مەبەست (Destination)</label>
+                    <input type="text" id="editSaleDestination" placeholder="بۆ نموونە: تەیراوە" style="background:var(--modal-input-bg); color:var(--text-main); border-radius:10px; padding:10px; border:1px solid var(--border-color); width:100%;">
+                </div>
+
+                <div class="form-grid-2" style="margin-bottom:15px;">
+                    <div class="input-group">
+                        <label>بڕی QTY</label>
+                        <input type="number" id="editSaleQty" min="0" style="background:var(--modal-input-bg); color:var(--text-main); border-radius:10px; padding:10px; border:1px solid var(--border-color); width:100%;">
+                    </div>
+                    <div class="input-group">
+                        <label>بڕی ستیکەر</label>
+                        <input type="number" id="editSaleStickerQty" min="0" style="background:var(--modal-input-bg); color:var(--text-main); border-radius:10px; padding:10px; border:1px solid var(--border-color); width:100%;">
+                    </div>
+                </div>
+
+                <div style="background:rgba(239,68,68,0.08); border:1px dashed rgba(239,68,68,0.3); border-radius:10px; padding:12px; margin-bottom:18px; font-size:0.82rem; color:#ef4444; line-height:1.5;">
+                    ⚠️ گۆڕانکاری لەم تۆمارە دەگۆڕێت بڕی مەوجودی بەرهەمەکەشی لە کۆگا. تکایە باش بیرت لێبکەرەوە.
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" id="cancelEditSaleBtn">❌ هەڵوەشانەوە</button>
+                    <button type="button" class="save-btn" id="saveEditSaleBtn" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">💾 پاشەکەوتکردن</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.5/dist/tesseract.min.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
+
+
