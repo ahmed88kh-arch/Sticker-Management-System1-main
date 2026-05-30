@@ -68,6 +68,20 @@ document.addEventListener('click', (e) => {
         section.style.display = section.id === target ? 'block' : 'none';
     });
 
+    // Hide top bar elements when not in the home dashboard
+    const topBarRight = document.querySelector('.top-bar-right');
+    const sidebarHeader = document.querySelector('.sidebar-header');
+    
+    if (topBarRight && sidebarHeader) {
+        if (target === 'sectionHomeMenu') {
+            topBarRight.style.display = 'flex';
+            sidebarHeader.style.display = 'flex';
+        } else {
+            topBarRight.style.display = 'none';
+            sidebarHeader.style.display = 'none';
+        }
+    }
+
     // Run tab-specific rendering/refresh logic to keep UI in sync
     if (target === 'sectionDashboard') {
         try {
