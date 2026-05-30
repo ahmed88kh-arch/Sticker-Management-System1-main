@@ -17,9 +17,9 @@
                     <span class="logo-text" style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">StickerPro</span>
                 </div>
                 
-                <button class="nav-item home-btn active" data-target="sectionHomeMenu" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #1f2937; border: none; padding: 6px 15px; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif;">
-                    <img src="home-icon.png" alt="Home" style="width: 24px; height: 24px; object-fit: contain;">
-                    <span style="font-size: 0.8rem;">سەرەتا</span>
+                <button class="nav-item home-btn active" data-target="sectionHomeMenu" onclick="if(typeof forceGoHome === 'function') forceGoHome();" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #1f2937; border: none; padding: 6px 15px; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; position: relative; z-index: 9999;">
+                    <img src="home-icon.png" alt="Home" style="width: 24px; height: 24px; object-fit: contain; pointer-events: none;">
+                    <span style="font-size: 0.8rem; pointer-events: none;">سەرەتا</span>
                 </button>
             </div>
 
@@ -201,6 +201,33 @@
 
             <!-- Section: Dashboard (Stickers List) -->
             <div id="sectionDashboard" class="page-section">
+
+                <!-- Interactive Physical Shelf Map Widget -->
+                <div class="recent-stickers-card" style="padding: 24px; margin-bottom: 25px; border: 1px solid rgba(168, 85, 247, 0.2); background: var(--card-bg);">
+                    <div class="card-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px;">
+                        <h3 style="color: #a855f7; display: flex; align-items: center; gap: 8px;">🗄️ نەخشەی ڕەفەکان و شوێنی کاڵاکان</h3>
+                        <span style="font-size: 0.75rem; color: var(--text-dim); background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.2); padding: 4px 10px; border-radius: 20px;">بینینی ڕاستەوخۆی ڕەفەکان</span>
+                    </div>
+                    <div style="padding: 5px;">
+                        <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 15px; background: rgba(168, 85, 247, 0.04); padding: 10px 14px; border-radius: 8px; border: 1px dashed rgba(168, 85, 247, 0.2); line-height: 1.4;">
+                            لەم بەشەدا دەتوانیت ڕەفەکان (Locations) ببینی و بزانیت چ بەرهەمێک لە کوێ دانراوە، بۆ بینینی وردەکاری هەر ڕەفەیەک کلیکی لەسەر بکە.
+                        </div>
+                        <div style="display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap;">
+                            <!-- Shelf Map Grid -->
+                            <div style="flex: 1.5; min-width: 320px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px;" id="shelfMapGrid">
+                                <!-- Populated dynamically by javascript -->
+                            </div>
+                            
+                            <!-- Shelf Active Detail Panel -->
+                            <div style="flex: 1; min-width: 280px; background: var(--modal-input-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; min-height: 220px;" id="shelfDetailPanel">
+                                <h4 style="margin-top: 0; color: #38bdf8; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;" id="shelfDetailTitle">وردەکاری ڕەفە</h4>
+                                <div id="shelfDetailContent" style="color: var(--text-dim); font-size: 0.85rem; text-align: center; padding-top: 50px;">
+                                    کلیک لەسەر ڕەفەیەک بکە بۆ بینینی بەرهەمەکانی ناوی...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
 
                 <!-- Advanced Search & Filter Panel -->

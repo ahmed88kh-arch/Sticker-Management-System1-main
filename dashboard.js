@@ -48,6 +48,24 @@ const navItems = document.querySelectorAll('.nav-item');
 const pageSections = document.querySelectorAll('.page-section');
 
 // ==================== NAVIGATION LOGIC ====================
+window.forceGoHome = function() {
+    document.querySelectorAll('.page-section').forEach(section => {
+        section.style.display = section.id === 'sectionHomeMenu' ? 'block' : 'none';
+    });
+    
+    const topBarRight = document.querySelector('.top-bar-right');
+    const sidebarHeader = document.querySelector('.sidebar-header');
+    if (topBarRight) topBarRight.style.display = 'flex';
+    if (sidebarHeader) sidebarHeader.style.display = 'flex';
+    
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    const homeBtn = document.querySelector('.home-btn');
+    if (homeBtn) homeBtn.classList.add('active');
+    
+    try {
+        if (typeof updateStats === 'function') updateStats();
+    } catch(e) { console.error('forceGoHome error', e); }
+};
 // Use event delegation on the document for reliability
 document.addEventListener('click', (e) => {
     // Find the clicked nav-item (even if click was on icon/text inside)
@@ -83,6 +101,13 @@ document.addEventListener('click', (e) => {
     }
 
     // Run tab-specific rendering/refresh logic to keep UI in sync
+    if (target === 'sectionHomeMenu') {
+        try {
+            updateStats();
+        } catch (e) {
+            console.error('sectionHomeMenu init error', e);
+        }
+    }
     if (target === 'sectionDashboard') {
         try {
             renderTable();
@@ -1264,16 +1289,39 @@ function openQuickSell(id) {
 // ==================== INVENTORY LOGIC ====================
 let currentInventoryView = 'table'; // 'table' or 'grid'
 
-// Setup elements
-const invSearchInput = document.getElementById('invSearchInput');
-const invStatusFilter = document.getElementById('invStatusFilter');
-const invSortFilter = document.getElementById('invSortFilter');
-const invCompanyFilter = document.getElementById('invCompanyFilter');
-const invTableBody = document.getElementById('invTableBody');
+// Setup elements mapping to actual dashboard.html IDs
+const invSearchInput = document.getElementById('filterName');
+const invStatusFilter = document.getElementById('filterExpStatus');
+const invSortFilter = document.getElementById('filterSortBy');
+const invCompanyFilter = document.getElementById('filterCompany');
+const invTableBody = document.getElementById('stickerTableBody');
 const invGridView = document.getElementById('invGridView');
 const invTableView = document.getElementById('invTableView');
 const viewToggleTable = document.getElementById('viewToggleTable');
 const viewToggleGrid = document.getElementById('viewToggleGrid');
+
+// Global aliases to fix broken HTML bindings
+window.renderTable = renderProfessionalInventory;
+window.applyFilters = renderProfessionalInventory;
+window.clearAllFilters = function() {
+    if (document.getElementById('filterName')) document.getElementById('filterName').value = '';
+    if (document.getElementById('filterBatch')) document.getElementById('filterBatch').value = '';
+    if (document.getElementById('filterCode')) document.getElementById('filterCode').value = '';
+    if (document.getElementById('filterLocation')) document.getElementById('filterLocation').value = '';
+    if (document.getElementById('filterCompany')) document.getElementById('filterCompany').value = '';
+    if (document.getElementById('filterExpStatus')) document.getElementById('filterExpStatus').value = '';
+    if (document.getElementById('filterSortBy')) document.getElementById('filterSortBy').value = '';
+    renderProfessionalInventory();
+};
+window.quickFilter = function(type) {
+    if (document.getElementById('filterExpStatus')) document.getElementById('filterExpStatus').value = '';
+    if (document.getElementById('filterCompany')) document.getElementById('filterCompany').value = '';
+    if (type === 'expired') { document.getElementById('filterExpStatus').value = 'expired'; }
+    if (type === 'soon') { document.getElementById('filterExpStatus').value = 'soon'; }
+    if (type === 'low_stock') { /* Handle low stock */ }
+    if (type === 'hawkary') { document.getElementById('filterCompany').value = 'HAWKARY'; }
+    renderProfessionalInventory();
+};
 
 // Event Listeners for Filters
 if (invSearchInput) invSearchInput.addEventListener('input', renderProfessionalInventory);
@@ -1304,7 +1352,7 @@ if (viewToggleGrid) {
 }
 
 // Export Inventory to Excel
-const inventoryExportBtn = document.getElementById('inventoryExportBtn');
+const inventoryExportBtn = document.getElementById('exportProductsBtn');
 if (inventoryExportBtn) {
     inventoryExportBtn.addEventListener('click', () => {
         const filtered = getFilteredProducts();
@@ -1365,22 +1413,100 @@ if (inventoryExportBtn) {
     });
 }
 
+function updateShelfLiveView() {
+    const shelfGrid = document.getElementById('shelfMapGrid');
+    if (!shelfGrid) return;
+    
+    // Group products by location
+    const locations = {};
+    products.forEach(p => {
+        const loc = (p.location || 'بێ ناو').toUpperCase().trim();
+        if (!locations[loc]) locations[loc] = { name: loc, count: 0, products: [] };
+        locations[loc].count++;
+        locations[loc].products.push(p);
+    });
+
+    shelfGrid.innerHTML = '';
+    
+    if (Object.keys(locations).length === 0) {
+        shelfGrid.innerHTML = '<div style="color:#6b7280; text-align:center; padding: 20px;">هیچ ڕەفەیەک نییە!</div>';
+        return;
+    }
+
+    Object.values(locations).forEach(loc => {
+        const div = document.createElement('div');
+        div.className = `shelf-card ${activeSelectedShelf === loc.name ? 'active' : ''}`;
+        div.style.cssText = `
+            background: ${activeSelectedShelf === loc.name ? 'rgba(168,85,247,0.15)' : 'var(--card-bg)'};
+            border: 2px solid ${activeSelectedShelf === loc.name ? '#a855f7' : 'var(--border-color)'};
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            position: relative;
+        `;
+        div.innerHTML = `
+            <div style="font-size:1.5rem; font-weight:700; color:var(--text-main); margin-bottom:5px;">${loc.name}</div>
+            <div style="font-size:0.8rem; color:var(--text-dim);"><span style="color:#a855f7; font-weight:bold;">${loc.count}</span> بەرهەم</div>
+            ${activeSelectedShelf === loc.name ? '<div style="position:absolute; top:-8px; right:-8px; background:#a855f7; color:#fff; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:0.8rem;">📍</div>' : ''}
+        `;
+        div.onclick = () => {
+            activeSelectedShelf = activeSelectedShelf === loc.name ? null : loc.name;
+            updateShelfLiveView();
+        };
+        shelfGrid.appendChild(div);
+    });
+
+    const panelContent = document.getElementById('shelfDetailContent');
+    const panelTitle = document.getElementById('shelfDetailTitle');
+    
+    if (!panelContent || !panelTitle) return;
+
+    if (!activeSelectedShelf) {
+        panelTitle.innerText = 'وردەکاری ڕەفە';
+        panelContent.innerHTML = '<div style="padding-top: 40px;">کلیک لەسەر ڕەفەیەک بکە بۆ بینینی بەرهەمەکانی ناوی...</div>';
+    } else {
+        const locData = locations[activeSelectedShelf];
+        panelTitle.innerText = `📦 کاڵاکانی ناو ڕەفەی: ${activeSelectedShelf}`;
+        if (!locData) return;
+        
+        let html = '<div style="display:flex; flex-direction:column; gap:8px; text-align:right; max-height:220px; overflow-y:auto; padding-right:5px;">';
+        locData.products.forEach(p => {
+            let status = p.qty > 0 ? '<span style="color:#10b981;font-size:0.75rem;">(مەوجودە)</span>' : '<span style="color:#ef4444;font-size:0.75rem;">(نەماوە)</span>';
+            html += `
+                <div style="background:var(--modal-input-bg); border:1px solid var(--border-color); padding:8px 12px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-weight:600; font-size:0.85rem; color:var(--text-main);">${p.name} <br> <span style="font-size:0.75rem; color:var(--text-dim); font-weight:normal;">${p.code}</span></div>
+                    <div style="text-align:left;">
+                        <div style="font-weight:700; color:#38bdf8; font-size:0.9rem;">${p.qty.toLocaleString()} <span style="font-size:0.7rem;">QTY</span></div>
+                        ${status}
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        panelContent.innerHTML = html;
+    }
+}
+
 function getFilteredProducts() {
-    const searchVal = (invSearchInput ? invSearchInput.value : '').toLowerCase().trim();
+    const filterName = document.getElementById('filterName') ? document.getElementById('filterName').value.toLowerCase().trim() : '';
+    const filterBatch = document.getElementById('filterBatch') ? document.getElementById('filterBatch').value.toLowerCase().trim() : '';
+    const filterCode = document.getElementById('filterCode') ? document.getElementById('filterCode').value.toLowerCase().trim() : '';
+    const filterLocation = document.getElementById('filterLocation') ? document.getElementById('filterLocation').value.toLowerCase().trim() : '';
+    const filterCompany = document.getElementById('filterCompany') ? document.getElementById('filterCompany').value.toLowerCase().trim() : '';
+    
     const statusVal = invStatusFilter ? invStatusFilter.value : 'all';
-    const companyVal = invCompanyFilter ? invCompanyFilter.value : 'all';
     const sortVal = invSortFilter ? invSortFilter.value : 'name_asc';
 
     let filtered = [...products];
 
-    // 1. Search Filter
-    if (searchVal) {
-        filtered = filtered.filter(p =>
-            p.name.toLowerCase().includes(searchVal) ||
-            p.code.toLowerCase().includes(searchVal) ||
-            p.batchNo.toLowerCase().includes(searchVal)
-        );
-    }
+    // 1. Search Filters
+    if (filterName) filtered = filtered.filter(p => (p.name || '').toLowerCase().includes(filterName));
+    if (filterBatch) filtered = filtered.filter(p => (p.batchNo || '').toLowerCase().includes(filterBatch));
+    if (filterCode) filtered = filtered.filter(p => (p.code || '').toLowerCase().includes(filterCode));
+    if (filterLocation) filtered = filtered.filter(p => (p.location || '').toLowerCase().includes(filterLocation));
+    if (filterCompany && filterCompany !== 'all') filtered = filtered.filter(p => (p.company || '').toLowerCase().includes(filterCompany));
 
     // 2. Status Filter
     const now = new Date();
@@ -1390,32 +1516,42 @@ function getFilteredProducts() {
         filtered = filtered.filter(p => p.qty <= 5 || p.stickerQty < 500);
     } else if (statusVal === 'out_of_stock') {
         filtered = filtered.filter(p => p.qty === 0 || p.stickerQty === 0);
-    } else if (statusVal === 'exp_soon') {
+    } else if (statusVal === 'exp_soon' || statusVal === 'soon') {
         filtered = filtered.filter(p => {
             if (!p.expDate) return false;
             const exp = new Date(p.expDate);
             const diffMonths = (exp - now) / (1000 * 60 * 60 * 24 * 30);
             return diffMonths < 6 && diffMonths >= 0;
         });
-    }
-
-    // 3. Company Filter
-    if (companyVal !== 'all') {
-        filtered = filtered.filter(p => p.company === companyVal);
+    } else if (statusVal === 'expired') {
+        filtered = filtered.filter(p => new Date(p.expDate) < now);
+    } else if (statusVal === 'ok') {
+        filtered = filtered.filter(p => {
+            const exp = new Date(p.expDate);
+            const diffMonths = (exp - now) / (1000 * 60 * 60 * 24 * 30);
+            return diffMonths >= 6;
+        });
     }
 
     // 4. Sorting Logic
     filtered.sort((a, b) => {
-        if (sortVal === 'name_asc') return a.name.localeCompare(b.name);
-        if (sortVal === 'name_desc') return b.name.localeCompare(a.name);
-        if (sortVal === 'qty_desc') return b.qty - a.qty;
-        if (sortVal === 'qty_asc') return a.qty - b.qty;
-        if (sortVal === 'sticker_desc') return b.stickerQty - a.stickerQty;
+        if (sortVal === 'name' || sortVal === 'name_asc') return (a.name || '').localeCompare(b.name || '');
+        if (sortVal === 'name_desc') return (b.name || '').localeCompare(a.name || '');
+        if (sortVal === 'qty_desc') return (b.qty || 0) - (a.qty || 0);
+        if (sortVal === 'qty_asc') return (a.qty || 0) - (b.qty || 0);
+        if (sortVal === 'sticker_desc') return (b.stickerQty || 0) - (a.stickerQty || 0);
         if (sortVal === 'exp_asc') {
             if (!a.expDate) return 1;
             if (!b.expDate) return -1;
             return new Date(a.expDate) - new Date(b.expDate);
         }
+        if (sortVal === 'exp_desc') {
+            if (!a.expDate) return 1;
+            if (!b.expDate) return -1;
+            return new Date(b.expDate) - new Date(a.expDate);
+        }
+        if (sortVal === 'price_desc') return (b.price || 0) - (a.price || 0);
+        if (sortVal === 'received_desc') return new Date(b.receivedDate) - new Date(a.receivedDate);
         return 0;
     });
 
@@ -1424,6 +1560,12 @@ function getFilteredProducts() {
 
 function updateCompanyDropdown() {
     if (!invCompanyFilter) return;
+    
+    // If it's a text input, we don't populate dropdown options
+    if (invCompanyFilter.tagName && invCompanyFilter.tagName.toLowerCase() === 'input') {
+        return;
+    }
+
     const currentSelection = invCompanyFilter.value;
 
     // Extract unique companies
@@ -1471,13 +1613,26 @@ function renderProfessionalInventory() {
     // 3. Filter and Sort products
     const filtered = getFilteredProducts();
 
-    // 4. Render Active View
+    // Update the search count UI for sectionDashboard
+    const resultNumEl = document.getElementById('filterResultNum');
+    if (resultNumEl) {
+        resultNumEl.innerText = filtered.length;
+    }
+    const noResultsRow = document.getElementById('noFilterResults');
+    if (noResultsRow) {
+        noResultsRow.style.display = filtered.length === 0 ? 'block' : 'none';
+    }
+
+    // 4. Update Shelf Live View
+    updateShelfLiveView();
+
+    // 5. Render Active View
     if (currentInventoryView === 'table') {
         if (!invTableBody) return;
         invTableBody.innerHTML = '';
 
         if (filtered.length === 0) {
-            invTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 40px; color: #64748b; font-size: 1rem;">هیچ بەرهەمێک نەدۆزرایەوە بەپێی ئەم فلتەرانە! 🔍</td></tr>';
+            // Keep it empty, the noFilterResults element will show.
             return;
         }
 
