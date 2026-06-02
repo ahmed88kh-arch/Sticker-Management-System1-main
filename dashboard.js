@@ -19,8 +19,8 @@ const openModalBtn = document.getElementById('openModalBtn');
 const closeModalBtn = document.getElementById('closeModalBtn');
 const stickerForm = document.getElementById('stickerForm');
 const tableBody = document.getElementById('stickerTableBody');
-const pasteArea = document.getElementById('pasteArea');
-const pastePreview = document.getElementById('pastePreview');
+const pasteArea = document.getElementById('apPasteArea');
+const pastePreview = document.getElementById('apPastePreview');
 
 // Workers
 const workerModal = document.getElementById('workerModal');
@@ -3930,3 +3930,219 @@ if (importCatalogPasteBtn) {
 
 window.switchCatalogTab = switchCatalogTab;
 
+window.switchAddProductTab = function(tab) {
+    const tabManual = document.getElementById('apTabManual');
+    const tabPaste = document.getElementById('apTabPaste');
+    const contentManual = document.getElementById('apContentManual');
+    const contentPaste = document.getElementById('apContentPaste');
+    
+    if (tab === 'manual') {
+        tabManual.classList.add('active');
+        tabManual.style.borderBottom = '3px solid #6366f1';
+        tabManual.style.color = 'var(--text-main)';
+        
+        tabPaste.classList.remove('active');
+        tabPaste.style.borderBottom = '3px solid transparent';
+        tabPaste.style.color = 'var(--text-muted)';
+        
+        contentManual.style.display = 'block';
+        contentPaste.style.display = 'none';
+    } else {
+        tabManual.classList.remove('active');
+        tabManual.style.borderBottom = '3px solid transparent';
+        tabManual.style.color = 'var(--text-muted)';
+        
+        tabPaste.classList.add('active');
+        tabPaste.style.borderBottom = '3px solid #6366f1';
+        tabPaste.style.color = 'var(--text-main)';
+        
+        contentManual.style.display = 'none';
+        contentPaste.style.display = 'block';
+        
+        const pasteArea = document.getElementById('apPasteArea');
+        if (pasteArea) setTimeout(() => pasteArea.focus(), 100);
+    }
+};
+
+const apImportPasteBtn = document.getElementById('apImportPasteBtn');
+if(apImportPasteBtn) {
+    apImportPasteBtn.addEventListener('click', importPastedData);
+}
+
+// ==================== CAMERA & OCR LOGIC ====================
+let apCameraStream = null;
+
+const apStartCameraBtn = document.getElementById('apStartCameraBtn');
+const apCloseCameraBtn = document.getElementById('apCloseCameraBtn');
+const apCaptureBtn = document.getElementById('apCaptureBtn');
+const apCameraContainer = document.getElementById('apCameraScannerContainer');
+const apVideoEl = document.getElementById('apWebcamVideo');
+const apCanvasEl = document.getElementById('apWebcamCanvas');
+const apImageInput = document.getElementById('apLabelImageInput');
+
+if(apStartCameraBtn) {
+    apStartCameraBtn.addEventListener('click', async () => {
+        if(apCameraContainer) apCameraContainer.style.display = 'flex';
+        try {
+            apCameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            if(apVideoEl) apVideoEl.srcObject = apCameraStream;
+        } catch (err) {
+            if(typeof showToast === 'function') showToast('⚠️ نەتوانرا کامێرا بکرێتەوە: ' + err.message);
+        }
+    });
+}
+
+if(apCloseCameraBtn) {
+    apCloseCameraBtn.addEventListener('click', () => {
+        if(apCameraStream) {
+            apCameraStream.getTracks().forEach(track => track.stop());
+            apCameraStream = null;
+        }
+        if(apCameraContainer) apCameraContainer.style.display = 'none';
+    });
+}
+
+if(apCaptureBtn) {
+    apCaptureBtn.addEventListener('click', () => {
+        if(!apCameraStream) return;
+        if(apCanvasEl && apVideoEl) {
+            apCanvasEl.width = apVideoEl.videoWidth || 640;
+            apCanvasEl.height = apVideoEl.videoHeight || 480;
+            const ctx = apCanvasEl.getContext('2d');
+            ctx.drawImage(apVideoEl, 0, 0, apCanvasEl.width, apCanvasEl.height);
+            const dataUrl = apCanvasEl.toDataURL('image/jpeg');
+            
+            // Stop camera
+            apCameraStream.getTracks().forEach(track => track.stop());
+            apCameraStream = null;
+            if(apCameraContainer) apCameraContainer.style.display = 'none';
+            
+            processOCR(dataUrl);
+        }
+    });
+}
+
+if(apImageInput) {
+    apImageInput.addEventListener('change', (e) => {
+        if(e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                processOCR(evt.target.result);
+            };
+            reader.readAsDataURL(e.target.files[0]);
+            e.target.value = ''; // Reset
+        }
+    });
+}
+
+function processOCR(imageSrc) {
+    if(typeof showToast === 'function') showToast('⏳ تکایە چاوەڕێبە... سەرقاڵی خوێندنەوەی وێنەکەین');
+    if(typeof Tesseract === 'undefined') {
+        if(typeof showToast === 'function') showToast('❌ کتێبخانەی Tesseract بوونی نییە');
+        return;
+    }
+    
+    Tesseract.recognize(
+        imageSrc,
+        'eng+ara',
+        { logger: m => console.log(m) }
+    ).then(({ data: { text } }) => {
+        console.log("OCR Result: ", text);
+        if(typeof showToast === 'function') showToast('✅ وێنەکە بە سەرکەوتوویی خوێندرایەوە!');
+        
+        // Basic parser for demonstration
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        
+        let batchFound = false;
+        let codeFound = false;
+        let nameFound = false;
+        
+        lines.forEach(line => {
+            const matchNum = line.match(/\d+/);
+            // Attempt to assign string without numbers to Product Name
+            if (!line.match(/\d/) && !nameFound && line.length > 3) {
+                const el = document.getElementById('apProductName');
+                if(el && !el.value) {
+                    el.value = line;
+                    nameFound = true;
+                }
+            }
+            if(matchNum) {
+                if(!batchFound) {
+                    const el = document.getElementById('apBatchNo');
+                    if(el && !el.value) {
+                        el.value = matchNum[0];
+                        batchFound = true;
+                    }
+                } else if (!codeFound) {
+                    const el = document.getElementById('apProductCode');
+                    if(el && !el.value) {
+                        el.value = matchNum[0];
+                        codeFound = true;
+                    }
+                }
+            }
+        });
+    }).catch(err => {
+        console.error(err);
+        if(typeof showToast === 'function') showToast('❌ هەڵە لە خوێندنەوەی وێنەکە: ' + err.message);
+    });
+}
+
+// ==================== AUTO FILL LOGIC ====================
+function autoFillProductData(val, type) {
+    if (!val || val.trim() === '') return;
+    val = val.trim().toLowerCase();
+    
+    // Search in catalog first, then in products
+    let found = catalog.find(item => item[type] && item[type].toString().toLowerCase() === val);
+    if (!found) {
+        found = products.find(item => item[type] && item[type].toString().toLowerCase() === val);
+    }
+    
+    if (found) {
+        let filledCount = 0;
+        
+        const nameEl = document.getElementById('apProductName');
+        if (nameEl && !nameEl.value && found.name) { nameEl.value = found.name; filledCount++; }
+        
+        const priceEl = document.getElementById('apPrice');
+        if (priceEl && !priceEl.value && found.price) { priceEl.value = found.price; filledCount++; }
+        
+        const companyEl = document.getElementById('apCompany');
+        if (companyEl && !companyEl.value && found.company) { companyEl.value = found.company; filledCount++; }
+        
+        const pNumberEl = document.getElementById('apPNumber');
+        if (pNumberEl && !pNumberEl.value && found.pNumber) { pNumberEl.value = found.pNumber; filledCount++; }
+        
+        const locationEl = document.getElementById('apLocation');
+        if (locationEl && !locationEl.value && found.location) { locationEl.value = found.location; filledCount++; }
+        
+        // Also fill the other identifier if it's empty
+        if (type === 'batchNo') {
+            const codeEl = document.getElementById('apProductCode');
+            if (codeEl && !codeEl.value && found.code) { codeEl.value = found.code; filledCount++; }
+        } else if (type === 'code') {
+            const batchEl = document.getElementById('apBatchNo');
+            if (batchEl && !batchEl.value && found.batchNo) { batchEl.value = found.batchNo; filledCount++; }
+        }
+        
+        if (filledCount > 0 && typeof showToast === 'function') {
+            showToast('✨ زانیارییەکان بە ئۆتۆماتیکی پڕکرانەوە بەپێی داتابەیس!');
+        }
+    }
+}
+
+const apBatchInput = document.getElementById('apBatchNo');
+if (apBatchInput) {
+    apBatchInput.addEventListener('input', (e) => {
+        autoFillProductData(e.target.value, 'batchNo');
+    });
+}
+
+const apCodeInput = document.getElementById('apProductCode');
+if (apCodeInput) {
+    apCodeInput.addEventListener('input', (e) => {
+        autoFillProductData(e.target.value, 'code');
+    });
+}
