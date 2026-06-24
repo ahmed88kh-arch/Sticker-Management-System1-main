@@ -899,11 +899,16 @@ function renderWorkerTable() {
     workerTableBody.innerHTML = '';
     workers.forEach(w => {
         const tr = document.createElement('tr');
+        tr.style.cursor = 'pointer';
+        tr.addEventListener('click', (e) => {
+            if (e.target.closest('.action-btn')) return;
+            if (window.openWorkerProfile) window.openWorkerProfile(w.id);
+        });
         tr.innerHTML = `
-            <td>${w.name}</td>
+            <td style="font-weight: 600; color: #6366f1;">${w.name}</td>
             <td>${w.phone}</td>
-            <td>${w.job}</td>
-            <td>${w.salary.toLocaleString()}</td>
+            <td><span style="background: rgba(99,102,241,0.1); color: #4f46e5; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem;">${w.job}</span></td>
+            <td><strong style="color: #10b981;">${w.salary.toLocaleString()}</strong></td>
             <td>${formatDate(w.joinDate)}</td>
             <td>${w.address}</td>
             <td>
@@ -940,6 +945,90 @@ function editWorker(id) {
     document.getElementById('workerAddress').value = w.address;
     workers = workers.filter(wr => wr.id !== id);
     workerModal.classList.add('active');
+}
+
+window.openWorkerProfile = function(id) {
+    const w = workers.find(wr => wr.id === id);
+    if (!w) return;
+    
+    document.getElementById('wpName').innerText = w.name;
+    document.getElementById('wpJob').innerText = `پێشە: ${w.job || '-'}`;
+    document.getElementById('wpPhone').innerText = `📞 ${w.phone || '-'}`;
+    document.getElementById('wpDate').innerText = `📅 دەستپێکردن: ${formatDate(w.joinDate) || '-'}`;
+    document.getElementById('wpSalary').innerText = `${(w.salary || 0).toLocaleString()} IQD`;
+    
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    let totalStickersAll = 0;
+    let totalStickersMonth = 0;
+    const recentActivity = [];
+    
+    sales.forEach(s => {
+        const saleDate = new Date(s.date);
+        const isCurrentMonth = saleDate.getMonth() === currentMonth && saleDate.getFullYear() === currentYear;
+        
+        if (s.assignedWorkers) {
+            const workerEntry = s.assignedWorkers.find(aw => aw.id == id);
+            if (workerEntry) {
+                totalStickersAll += workerEntry.qty;
+                if (isCurrentMonth) totalStickersMonth += workerEntry.qty;
+                
+                recentActivity.push({
+                    productName: s.productName,
+                    invoice: s.invoiceId || s.destination || '-',
+                    qty: workerEntry.qty,
+                    date: s.date
+                });
+            }
+        }
+    });
+    
+    recentActivity.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    document.getElementById('wpTotalStickersAll').innerText = totalStickersAll.toLocaleString();
+    document.getElementById('wpTotalStickersMonth').innerText = totalStickersMonth.toLocaleString();
+    
+    let attendanceCount = 0;
+    if (typeof attendance !== 'undefined') {
+        attendance.forEach(log => {
+            const logDate = new Date(log.date);
+            if (log.workerId == id && logDate.getMonth() === currentMonth && logDate.getFullYear() === currentYear) {
+                attendanceCount++;
+            }
+        });
+    }
+    document.getElementById('wpAttendanceMonth').innerText = attendanceCount.toLocaleString();
+    
+    const tbody = document.getElementById('wpRecentActivityBody');
+    tbody.innerHTML = '';
+    
+    if (recentActivity.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: #64748b;">هیچ چالاکییەک نەدۆزرایەوە بۆ ئەم کڕێکارە.</td></tr>';
+    } else {
+        recentActivity.slice(0, 15).forEach(act => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-weight: 600;">${act.productName}</td>
+                <td><span style="background: rgba(99,102,241,0.1); color: #4f46e5; border-radius: 6px; padding: 2px 8px; font-size: 0.8rem;">${act.invoice}</span></td>
+                <td style="color: #10b981; font-weight: bold;">+${act.qty.toLocaleString()}</td>
+                <td style="color: #64748b; font-size: 0.85rem;">${formatDate(act.date)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+    
+    const modal = document.getElementById('workerProfileModal');
+    if (modal) modal.style.display = 'flex';
+};
+
+const closeWorkerProfileBtn = document.getElementById('closeWorkerProfileBtn');
+if (closeWorkerProfileBtn) {
+    closeWorkerProfileBtn.addEventListener('click', () => {
+        const modal = document.getElementById('workerProfileModal');
+        if (modal) modal.style.display = 'none';
+    });
 }
 
 // ==================== SALES LOGIC ====================
@@ -1110,6 +1199,11 @@ document.getElementById('submitInvoiceBtn').addEventListener('click', () => {
 
     if (currentInvoiceCart.length === 0) return;
 
+    let invoiceCounter = parseInt(localStorage.getItem('sticker_invoice_counter') || '0');
+    invoiceCounter++;
+    localStorage.setItem('sticker_invoice_counter', invoiceCounter.toString());
+    const invoiceId = 'INV-' + invoiceCounter.toString().padStart(4, '0');
+
     // Process all cart items
     currentInvoiceCart.forEach(item => {
         const pIndex = products.findIndex(p => p && p.id && p.id.toString() === item.productId.toString());
@@ -1120,6 +1214,8 @@ document.getElementById('submitInvoiceBtn').addEventListener('click', () => {
             // Record Sale
             sales.unshift({
                 id: Date.now() + Math.random(),
+                invoiceId: invoiceId,
+                invoiceNumber: invoiceCounter,
                 productName: item.productName,
                 destination: destination,
                 qty: item.sQty,
@@ -1147,30 +1243,75 @@ document.getElementById('submitInvoiceBtn').addEventListener('click', () => {
         document.getElementById('salesProductSelect').dispatchEvent(new Event('change'));
     }
 
-    showToast('✅ تەواوی قائیمەکە سەرکەوتووانە تۆمارکرا!');
+    showToast(`✅ تەواوی قائیمەکە سەرکەوتووانە تۆمارکرا بە ژمارە ${invoiceId}!`);
 });
 
 function renderSalesTable() {
     salesTableBody.innerHTML = '';
+    
+    // Group sales by invoice
+    const grouped = {};
     sales.forEach(s => {
-        const workersHtml = (s.assignedWorkers || []).map(w => `<span class="worker-tag">${w.name}: ${w.qty}</span>`).join(' ');
+        let key = s.invoiceId;
+        if (!key) key = 'تۆماری کۆن - ' + s.id; // For backward compatibility
+        
+        if (!grouped[key]) {
+            grouped[key] = {
+                invoiceId: key,
+                destination: s.destination || 'نەزانراو',
+                date: s.date,
+                items: []
+            };
+        }
+        grouped[key].items.push(s);
+    });
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${s.productName}</td>
-            <td><span class="location-badge">${s.destination || '-'}</span></td>
-            <td style="color: #ef4444;">-${s.qty.toLocaleString()}</td>
-            <td style="color: #ef4444;">-${s.stickerQty.toLocaleString()}</td>
-            <td>${workersHtml}</td>
-            <td>${new Date(s.date).toLocaleString('ku-IQ')}</td>
-            <td style="text-align:center;">
-                <div class="action-btns" style="justify-content:center;">
-                    <button class="action-btn edit" title="دەستکاریکردن" onclick="editSale('${s.id}')">✏️</button>
-                    <button class="action-btn delete" title="سڕینەوە" onclick="deleteSale('${s.id}')">🗑️</button>
+    const sortedGroups = Object.values(grouped).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    sortedGroups.forEach(group => {
+        // 1. Render Invoice Header Row
+        const headerTr = document.createElement('tr');
+        headerTr.style.backgroundColor = 'rgba(99, 102, 241, 0.05)';
+        headerTr.style.borderTop = '2px solid rgba(99, 102, 241, 0.15)';
+        
+        const dateStr = new Date(group.date).toLocaleString('ku-IQ');
+        let title = group.invoiceId.startsWith('INV') ? `قائیمەی ژمارە ${group.invoiceId}` : `قائیمەی پێشوو`;
+
+        headerTr.innerHTML = `
+            <td colspan="7" style="padding: 14px 16px; border-bottom: 1px solid rgba(99,102,241,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; gap: 20px; align-items: center;">
+                        <span style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 6px 14px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; box-shadow: 0 4px 10px rgba(99,102,241,0.2);">🧾 ${title}</span>
+                        <span style="font-weight: bold; color: var(--text-main); font-size: 0.95rem;">📍 شوێنی مەبەست: <span style="color: #6366f1;">${group.destination}</span></span>
+                        <span style="font-size: 0.85rem; color: #64748b; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 6px;">🛒 ژمارەی مادەکان: ${group.items.length}</span>
+                    </div>
+                    <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">🕒 ${dateStr}</span>
                 </div>
             </td>
         `;
-        salesTableBody.appendChild(tr);
+        salesTableBody.appendChild(headerTr);
+
+        // 2. Render Invoice Items
+        group.items.forEach(s => {
+            const workersHtml = (s.assignedWorkers || []).map(w => `<span class="worker-tag">${w.name}: ${w.qty}</span>`).join(' ');
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="padding-right: 30px; font-weight: 600;">${s.productName}</td>
+                <td><span style="color: #94a3b8; font-size: 0.85rem;">لە قائیمەدایە</span></td>
+                <td style="color: #ef4444; font-weight: bold;">-${s.qty.toLocaleString()}</td>
+                <td style="color: #ef4444; font-weight: bold;">-${s.stickerQty.toLocaleString()}</td>
+                <td>${workersHtml}</td>
+                <td style="color: #94a3b8; font-size: 0.85rem;">${new Date(s.date).toLocaleTimeString('ku-IQ')}</td>
+                <td style="text-align:center;">
+                    <div class="action-btns" style="justify-content:center;">
+                        <button class="action-btn edit" title="دەستکاریکردن" onclick="editSale('${s.id}')">✏️</button>
+                        <button class="action-btn delete" title="سڕینەوە" onclick="deleteSale('${s.id}')">🗑️</button>
+                    </div>
+                </td>
+            `;
+            salesTableBody.appendChild(tr);
+        });
     });
 }
 
@@ -3678,6 +3819,10 @@ function renderCatalogTable() {
         `;
         tableBody.appendChild(tr);
     });
+    
+    if (typeof updateAddProductDatalist === 'function') {
+        updateAddProductDatalist();
+    }
 }
 
 // Bind search input listener
@@ -4119,12 +4264,17 @@ function autoFillProductData(val, type) {
         if (locationEl && !locationEl.value && found.location) { locationEl.value = found.location; filledCount++; }
         
         // Also fill the other identifier if it's empty
-        if (type === 'batchNo') {
-            const codeEl = document.getElementById('apProductCode');
-            if (codeEl && !codeEl.value && found.code) { codeEl.value = found.code; filledCount++; }
-        } else if (type === 'code') {
+        if (type !== 'batchNo') {
             const batchEl = document.getElementById('apBatchNo');
             if (batchEl && !batchEl.value && found.batchNo) { batchEl.value = found.batchNo; filledCount++; }
+        }
+        if (type !== 'code') {
+            const codeEl = document.getElementById('apProductCode');
+            if (codeEl && !codeEl.value && found.code) { codeEl.value = found.code; filledCount++; }
+        }
+        if (type !== 'name') {
+            const nameEl = document.getElementById('apProductName');
+            if (nameEl && !nameEl.value && found.name) { nameEl.value = found.name; filledCount++; }
         }
         
         if (filledCount > 0 && typeof showToast === 'function') {
@@ -4146,3 +4296,232 @@ if (apCodeInput) {
         autoFillProductData(e.target.value, 'code');
     });
 }
+
+const apNameInput = document.getElementById('apProductName');
+if (apNameInput) {
+    apNameInput.addEventListener('input', (e) => {
+        autoFillProductData(e.target.value, 'name');
+    });
+}
+
+window.renderAdvancedSalesReport = function() {
+    const searchInput = document.getElementById('advancedSalesSearch');
+    const tableBody = document.getElementById('advancedSalesReportTableBody');
+    const totalStickersEl = document.getElementById('advSearchTotalStickers');
+    const totalQtyEl = document.getElementById('advSearchTotalQty');
+    
+    if (!searchInput || !tableBody) return;
+    
+    const query = searchInput.value.toLowerCase().trim();
+    
+    if (query.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6b7280; padding: 30px;">تکایە لە سەرەوە بگەڕێ بۆ بینینی زانیارییەکان.</td></tr>';
+        if(totalStickersEl) totalStickersEl.innerText = '0';
+        if(totalQtyEl) totalQtyEl.innerText = '0';
+        return;
+    }
+    
+    let matchingProductNames = new Set();
+    
+    products.forEach(p => {
+        if ((p.name && p.name.toLowerCase().includes(query)) ||
+            (p.batchNo && p.batchNo.toLowerCase().includes(query)) ||
+            (p.code && p.code.toLowerCase().includes(query))) {
+            matchingProductNames.add(p.name);
+        }
+    });
+    
+    const matchingSales = sales.filter(s => {
+        if (matchingProductNames.has(s.productName)) return true;
+        if (s.productName && s.productName.toLowerCase().includes(query)) return true;
+        if (s.invoiceId && s.invoiceId.toLowerCase().includes(query)) return true;
+        if (s.invoiceNumber && s.invoiceNumber.toString().includes(query)) return true;
+        return false;
+    });
+    
+    tableBody.innerHTML = '';
+    
+    let totalS = 0;
+    let totalQ = 0;
+    
+    if (matchingSales.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #ef4444; padding: 30px;">هیچ ئەنجامێک نەدۆزرایەوە بۆ ئەم گەڕانە.</td></tr>';
+    } else {
+        // Sort descending by date
+        matchingSales.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(s => {
+            totalS += (s.stickerQty || 0);
+            totalQ += (s.qty || 0);
+            
+            const prod = products.find(p => p.name === s.productName);
+            const batchInfo = prod && prod.batchNo ? ` (باچ: <span style="color:#6366f1; font-weight:bold;">${prod.batchNo}</span>)` : '';
+            const invoiceBadge = s.invoiceId ? `<div style="margin-top: 5px;"><span style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: #10b981; padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">🧾 ${s.invoiceId}</span></div>` : '';
+            
+            let workersHtml = '-';
+            if (s.assignedWorkers && s.assignedWorkers.length > 0) {
+                workersHtml = s.assignedWorkers.map(w => `<span style="display:inline-block; margin:2px; background:rgba(99,102,241,0.1); color:#6366f1; border:1px solid rgba(99,102,241,0.3); padding:3px 8px; border-radius:12px; font-size:0.8rem; font-weight:bold;">${w.name}: ${w.qty}</span>`).join(' ');
+            }
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-weight: 600; line-height: 1.4;">${s.productName}${batchInfo}${invoiceBadge}</td>
+                <td><span class="location-badge" style="background:#e0e7ff; color:#4f46e5; border-color:#c7d2fe;">${s.destination || 'نەزانراو'}</span></td>
+                <td><span class="stock-badge in-stock">${(s.qty || 0).toLocaleString()} QTY</span></td>
+                <td><span class="stock-badge" style="background:#fef3c7; color:#d97706; border:1px solid #fde68a;">${(s.stickerQty || 0).toLocaleString()} ستیکەر</span></td>
+                <td>${workersHtml}</td>
+                <td><span style="color:#64748b; font-size:0.85rem;">${formatDate(s.date)}</span></td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+    
+    if(totalStickersEl) totalStickersEl.innerText = totalS.toLocaleString();
+    if(totalQtyEl) totalQtyEl.innerText = totalQ.toLocaleString();
+};
+
+function updateAddProductDatalist() {
+    const dataList = document.getElementById('apExistingProductsList');
+    if (!dataList) return;
+    
+    const uniqueNames = new Set();
+    
+    // Add from catalog first
+    catalog.forEach(item => {
+        if (item.name) uniqueNames.add(item.name.trim());
+    });
+    
+    // Then add from products
+    products.forEach(p => {
+        if (p.name) uniqueNames.add(p.name.trim());
+    });
+    
+    dataList.innerHTML = '';
+    uniqueNames.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        dataList.appendChild(option);
+    });
+}
+
+// ==================== BARCODE SEARCH LOGIC ====================
+const barcodeInput = document.getElementById('barcodeScannerInput');
+const barcodeResultArea = document.getElementById('barcodeResultArea');
+const barcodeNotFoundArea = document.getElementById('barcodeNotFoundArea');
+const barcodeResultDetails = document.getElementById('barcodeResultDetails');
+let barcodeCurrentProduct = null;
+
+if (barcodeInput) {
+    barcodeInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            searchBarcode(barcodeInput.value.trim());
+        }
+    });
+
+    let debounceTimer;
+    barcodeInput.addEventListener('input', (e) => {
+        clearTimeout(debounceTimer);
+        const val = e.target.value.trim();
+        if (val.length > 2) {
+            debounceTimer = setTimeout(() => {
+                searchBarcode(val);
+            }, 400);
+        } else {
+            if(barcodeResultArea) barcodeResultArea.style.display = 'none';
+            if(barcodeNotFoundArea) barcodeNotFoundArea.style.display = 'none';
+        }
+    });
+}
+
+function searchBarcode(query) {
+    if (!query) return;
+    const lowerQuery = query.toLowerCase();
+    
+    // Find in products (we check code, batchNo, pNumber)
+    const product = products.find(p => 
+        (p.code && p.code.toLowerCase() === lowerQuery) || 
+        (p.batchNo && p.batchNo.toLowerCase() === lowerQuery) || 
+        (p.pNumber && p.pNumber.toLowerCase() === lowerQuery)
+    );
+    
+    if (product) {
+        barcodeCurrentProduct = product;
+        
+        let stockStatus = '';
+        if (product.qty > 10) stockStatus = '<span style="color: #10b981; font-weight: bold; font-size: 0.8rem;">(باشە)</span>';
+        else if (product.qty > 0) stockStatus = '<span style="color: #f59e0b; font-weight: bold; font-size: 0.8rem;">(کەمە)</span>';
+        else stockStatus = '<span style="color: #ef4444; font-weight: bold; font-size: 0.8rem;">(نەماوە)</span>';
+        
+        barcodeResultDetails.innerHTML = `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: right;">
+                <div><span style="color:#6b7280; font-size:0.9rem;">ناوی بەرهەم:</span> <br> <strong style="font-size:1.2rem; color:#1f2937;">${product.name || '-'}</strong></div>
+                <div><span style="color:#6b7280; font-size:0.9rem;">ژمارەی باچ:</span> <br> <strong style="font-size:1.1rem; color:#6366f1;">${product.batchNo || '-'}</strong></div>
+                
+                <div><span style="color:#6b7280; font-size:0.9rem;">کۆد / بارکۆد:</span> <br> <strong style="font-size:1.1rem; color:#475569;">${product.code || '-'}</strong></div>
+                <div><span style="color:#6b7280; font-size:0.9rem;">کۆمپانیا:</span> <br> <strong style="font-size:1.1rem; color:#475569;">${product.company || '-'}</strong></div>
+                
+                <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 8px;"><span style="color:#6b7280; font-size:0.9rem;">مەوجود (QTY):</span> <br> <strong style="font-size:1.3rem; color:#10b981;">${(product.qty || 0).toLocaleString()}</strong> ${stockStatus}</div>
+                <div style="background: rgba(245,158,11,0.1); padding: 10px; border-radius: 8px;"><span style="color:#6b7280; font-size:0.9rem;">ستیکەری بەردەست:</span> <br> <strong style="font-size:1.3rem; color:#f59e0b;">${(product.stickerQty || 0).toLocaleString()}</strong></div>
+                
+                <div><span style="color:#6b7280; font-size:0.9rem;">نرخی تاک:</span> <br> <strong style="font-size:1.1rem; color:#10b981;">${(product.price || 0).toLocaleString()} د.ع</strong></div>
+                <div><span style="color:#6b7280; font-size:0.9rem;">شوێن / ڕەفە:</span> <br> <strong style="font-size:1.1rem; color:#a855f7;">${product.location || '-'}</strong></div>
+            </div>
+        `;
+        barcodeNotFoundArea.style.display = 'none';
+        barcodeResultArea.style.display = 'block';
+    } else {
+        barcodeResultArea.style.display = 'none';
+        barcodeNotFoundArea.style.display = 'block';
+    }
+}
+
+document.getElementById('barcodeActionClearBtn')?.addEventListener('click', () => {
+    if(barcodeInput) {
+        barcodeInput.value = '';
+        barcodeInput.focus();
+    }
+    if(barcodeResultArea) barcodeResultArea.style.display = 'none';
+    if(barcodeNotFoundArea) barcodeNotFoundArea.style.display = 'none';
+    barcodeCurrentProduct = null;
+});
+
+document.getElementById('barcodeActionSellBtn')?.addEventListener('click', () => {
+    if (barcodeCurrentProduct) {
+        // Switch to Sales section
+        const navItem = document.querySelector('.nav-item[data-target="sectionSales"]');
+        if (navItem) navItem.click();
+        
+        // Auto select the product in the Sales dropdown
+        setTimeout(() => {
+            const selectEl = document.getElementById('salesProductSelect');
+            if (selectEl) {
+                selectEl.value = barcodeCurrentProduct.id;
+                selectEl.dispatchEvent(new Event('change'));
+                
+                // Focus on Qty input
+                const qtyInput = document.getElementById('salesQty');
+                if (qtyInput) qtyInput.focus();
+            }
+        }, 150);
+    }
+});
+
+// Auto-focus barcode input when section is opened
+document.querySelectorAll('.nav-item[data-target="sectionBarcodeSearch"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        setTimeout(() => {
+            if (barcodeInput) {
+                barcodeInput.value = '';
+                barcodeInput.focus();
+                if(barcodeResultArea) barcodeResultArea.style.display = 'none';
+                if(barcodeNotFoundArea) barcodeNotFoundArea.style.display = 'none';
+            }
+        }, 100);
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    if(document.getElementById('advancedSalesSearch')) {
+        window.renderAdvancedSalesReport();
+    }
+    updateAddProductDatalist();
+});

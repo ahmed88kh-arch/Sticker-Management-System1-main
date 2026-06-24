@@ -319,12 +319,11 @@
                                     <th>کۆد</th>
                                     <th>ناوی بەرهەم</th>
                                     <th>بڕ (QTY)</th>
-                                    <th>شوێن</th>
                                     <th>بڕی ستیکەر</th>
                                     <th>نرخ</th>
-                                    <th>ژ. مۆڵەت</th>
+                                    <th>کۆی نرخ</th>
+                                    <th>شوێن</th>
                                     <th>کۆمپانیا</th>
-                                    <th>وەرگیراوە</th>
                                     <th>بەسەرچوون</th>
                                     <th>کردارەکان</th>
                                 </tr>
@@ -424,6 +423,49 @@
                 </div>
             </div>
             <!-- END: Section: Add Product -->
+
+            <!-- Section: Barcode Search -->
+            <div id="sectionBarcodeSearch" class="page-section" style="display: none;">
+                <div class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h2>گەڕانی خێرای بارکۆد 🔍</h2>
+                            <p>لێرەدا دەتوانیت بارکۆدی سەر کاڵاکە بخوێنیتەوە یان بینوسیت بۆ دۆزینەوەی خێرای زانیارییەکان.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-stickers-card" style="padding: 30px; text-align: center; max-width: 600px; margin: 0 auto 30px auto; background: #ffffff; border: 1px solid rgba(99, 102, 241, 0.2); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-radius: 16px;">
+                    <img src="barcode-icon.png" alt="Barcode Scan" style="width: 80px; height: 80px; margin-bottom: 20px; opacity: 0.9; object-fit: contain;" onerror="this.style.display='none'">
+                    <h3 style="color: #4f46e5; margin-bottom: 20px; font-size: 1.4rem;">بارکۆد لێرەدا بخوێنەوە یان بنووسە</h3>
+                    <input type="text" id="barcodeScannerInput" placeholder="|||||| |||| |||||" style="width: 100%; max-width: 400px; padding: 18px; font-size: 1.5rem; letter-spacing: 2px; text-align: center; border: 2px solid #6366f1; border-radius: 12px; background: rgba(99,102,241,0.05); color: #1f2937; transition: all 0.3s; font-family: monospace; font-weight: bold;">
+                    <p style="font-size: 0.9rem; color: #6b7280; margin-top: 15px;">دڵنیابە لەوەی نیشانەکە (Cursor) لەناو بۆکسەکەدایە پێش خوێندنەوە</p>
+                </div>
+
+                <div id="barcodeResultArea" style="display: none; max-width: 700px; margin: 0 auto; animation: fadeIn 0.3s ease-out;">
+                    <div class="recent-stickers-card" style="background: #ffffff; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.15);">
+                        <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 20px; text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">✅</div>
+                            <h3 style="margin: 0; font-size: 1.5rem;">کاڵاکە دۆزرایەوە</h3>
+                        </div>
+                        <div style="padding: 25px;" id="barcodeResultDetails">
+                            <!-- Populated dynamically -->
+                        </div>
+                        <div style="padding: 20px; background: rgba(0,0,0,0.02); border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 15px; justify-content: center;">
+                            <button id="barcodeActionSellBtn" class="save-btn" style="background: #3b82f6; flex: 1; font-size: 1.1rem; padding: 12px;">🛒 چوون بۆ فرۆشتن</button>
+                            <button id="barcodeActionClearBtn" class="cancel-btn" style="flex: 1; font-size: 1.1rem; padding: 12px;">🔄 سڕینەوە</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="barcodeNotFoundArea" style="display: none; max-width: 600px; margin: 0 auto; animation: fadeIn 0.3s ease-out;">
+                    <div class="recent-stickers-card" style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 16px; padding: 30px; text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 15px;">❌</div>
+                        <h3 style="color: #ef4444; margin-bottom: 10px; font-size: 1.3rem;">ئەم بارکۆدە نەدۆزرایەوە لە سیستەمەکەدا!</h3>
+                        <p style="color: #6b7280; font-size: 0.95rem;">دڵنیابە لەوەی بارکۆدەکە ڕاستە یان پێشتر لە سیستەمەکەدا زیاد کراوە.</p>
+                    </div>
+                </div>
+            </div>
 
             <!-- Section: Workers -->
             <div id="sectionWorkers" class="page-section" style="display: none;">
@@ -703,6 +745,47 @@
                             <h2>ڕاپۆرتەکان و ئاماری کار 📊</h2>
                             <p>ئاماری چالاکی کڕێکارەکان و بڕی ستیکەرە لێدراوەکان بەپێی مانگ.</p>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Sales Search Widget -->
+                <div class="recent-stickers-card" style="margin-bottom: 25px; padding: 24px; background: #ffffff; border: 1px solid rgba(99, 102, 241, 0.15); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);">
+                    <div class="card-header" style="margin-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px;">
+                        <h3 style="color: #6366f1; display: flex; align-items: center; gap: 8px;">🔍 بەدواداچوونی پێشکەوتووی فرۆشتنەکان (Traceability)</h3>
+                    </div>
+                    <div style="margin-bottom: 15px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 300px; position: relative;">
+                            <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 1rem; pointer-events: none;">🔍</span>
+                            <input type="text" id="advancedSalesSearch" placeholder="بگەڕێ بەپێی ژمارەی قائیمە، ناوی بەرهەم یان باچ..." oninput="renderAdvancedSalesReport()" style="width: 100%; padding: 12px 40px 12px 12px; border-radius: 10px; border: 1.5px solid var(--border-color); background: var(--modal-input-bg); color: var(--text-main); font-size: 0.95rem; box-sizing: border-box; transition: border-color 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border-color)'">
+                        </div>
+                        <div style="background: rgba(99,102,241,0.08); padding: 10px 20px; border-radius: 10px; border: 1px dashed rgba(99,102,241,0.3); display: flex; gap: 20px;">
+                            <div>
+                                <span style="font-size: 0.75rem; color: #6b7280; display: block;">کۆی ستیکەری دۆزراوە</span>
+                                <strong id="advSearchTotalStickers" style="color: #6366f1; font-size: 1.1rem;">0</strong>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.75rem; color: #6b7280; display: block;">کۆی بڕی دۆزراوە (QTY)</span>
+                                <strong id="advSearchTotalQty" style="color: #10b981; font-size: 1.1rem;">0</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-container" style="max-height: 400px; overflow-y: auto; border: 1px solid rgba(0,0,0,0.05); border-radius: 10px;">
+                        <table class="data-table" style="min-width: unset; width: 100%;">
+                            <thead style="position: sticky; top: 0; background: var(--card-bg); z-index: 10;">
+                                <tr>
+                                    <th>بەرهەم</th>
+                                    <th>شوێنی مەبەست</th>
+                                    <th>بڕی QTY</th>
+                                    <th>کۆی ستیکەر</th>
+                                    <th>کڕێکارەکان و بڕی کارکردن</th>
+                                    <th>بەروار</th>
+                                </tr>
+                            </thead>
+                            <tbody id="advancedSalesReportTableBody">
+                                <!-- Dynamic rows will be added here -->
+                                <tr><td colspan="6" style="text-align: center; color: #6b7280; padding: 30px;">تکایە لە سەرەوە بگەڕێ بۆ بینینی زانیارییەکان.</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -1871,6 +1954,76 @@
                     <button type="button" class="save-btn" id="doExportBtn" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
                         ⬇️ هەناردەکردن
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Worker Profile Modal -->
+    <div id="workerProfileModal" class="modal-overlay" style="display:none; align-items:center; justify-content:center; z-index: 2000;">
+        <div class="modal-card" style="max-width: 800px; width: 95%; padding: 0; border-radius: 16px; overflow: hidden;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 0; padding: 20px;">
+                <h3 style="color: #fff; margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <span style="background: rgba(255,255,255,0.1); padding: 5px; border-radius: 50%;">🧑‍🔧</span> پڕۆفایلی کڕێکار
+                </h3>
+                <button class="close-btn" id="closeWorkerProfileBtn" style="color: #fff; opacity: 0.8;">✕</button>
+            </div>
+            <div style="padding: 24px; background: var(--card-bg);">
+                <!-- Profile Header -->
+                <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #6366f1, #4f46e5); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; box-shadow: 0 10px 15px -3px rgba(99,102,241,0.3);">
+                        🧑‍🔧
+                    </div>
+                    <div style="flex: 1; min-width: 250px;">
+                        <h2 id="wpName" style="margin: 0; color: var(--text-main); font-size: 1.5rem; margin-bottom: 5px;">ناوی کڕێکار</h2>
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap; color: #64748b; font-size: 0.9rem;">
+                            <span id="wpJob">پێشە: -</span>
+                            <span id="wpPhone">📞 -</span>
+                            <span id="wpDate">📅 بەرواری دەستپێکردن: -</span>
+                        </div>
+                    </div>
+                    <div style="text-align: left; background: rgba(16,185,129,0.08); padding: 12px 20px; border-radius: 12px; border: 1px dashed rgba(16,185,129,0.3);">
+                        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 2px;">مووچەی مانگانە</div>
+                        <div id="wpSalary" style="font-size: 1.25rem; font-weight: bold; color: #10b981;">0 IQD</div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 24px;">
+                    <div style="background: rgba(99,102,241,0.05); border: 1px solid rgba(99,102,241,0.2); border-radius: 12px; padding: 15px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">🏷️</div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">کۆی ستیکەر (ئەم مانگە)</div>
+                        <div id="wpTotalStickersMonth" style="font-size: 1.5rem; font-weight: bold; color: #6366f1;">0</div>
+                    </div>
+                    <div style="background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.2); border-radius: 12px; padding: 15px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">📦</div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">کۆی ستیکەر (هەموو کات)</div>
+                        <div id="wpTotalStickersAll" style="font-size: 1.5rem; font-weight: bold; color: #f59e0b;">0</div>
+                    </div>
+                    <div style="background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2); border-radius: 12px; padding: 15px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">✅</div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">دەوامی ئەم مانگە (ڕۆژ)</div>
+                        <div id="wpAttendanceMonth" style="font-size: 1.5rem; font-weight: bold; color: #10b981;">0</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity List -->
+                <div>
+                    <h4 style="margin-bottom: 12px; color: var(--text-main); font-size: 1.1rem; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">🕒 دوایین چالاکییەکان (فرۆشتن)</h4>
+                    <div style="max-height: 250px; overflow-y: auto; border-radius: 10px; border: 1px solid var(--border-color); background: var(--modal-input-bg);">
+                        <table class="data-table" style="width: 100%; margin: 0; min-width: 600px;">
+                            <thead style="position: sticky; top: 0; background: var(--card-bg);">
+                                <tr>
+                                    <th>ناوی بەرهەم</th>
+                                    <th>قائیمە/شوێن</th>
+                                    <th>بڕی ستیکەر لێدراو</th>
+                                    <th>بەروار</th>
+                                </tr>
+                            </thead>
+                            <tbody id="wpRecentActivityBody">
+                                <!-- Dynamically filled -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
